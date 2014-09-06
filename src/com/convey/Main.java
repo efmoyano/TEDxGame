@@ -12,18 +12,13 @@ import com.convey.utils.XLSProcessor;
  * @date 04/09/2014 21:25:33
  */
 public class Main {
-    
-    static{
-        System.out.println("Tests");
-    }
 
     public static void main(String args[]) {
-        
-        XLSProcessor xlsproc = new XLSProcessor();
-        xlsproc.setPath("C:\\test.xls");
-        xlsproc.setSheetIndex(0);
-        xlsproc.test();
 
+//        XLSProcessor xlsproc = new XLSProcessor();
+//        xlsproc.setPath("C:\\test.xls");
+//        xlsproc.setSheetIndex(0);
+//        xlsproc.test();
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Windows".equals(info.getName())) {
