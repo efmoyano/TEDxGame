@@ -12,6 +12,10 @@ import com.convey.utils.XLSProcessor;
  * @date 04/09/2014 21:25:33
  */
 public class Main {
+    
+    static{
+        System.out.println("Tests");
+    }
 
     public static void main(String args[]) {
         
