@@ -1,6 +1,7 @@
 package com.convey.GUI;
 
 import com.convey.hardware.arduino.ArduinoDevice;
+import com.convey.services.MySqlConnection;
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -19,8 +20,30 @@ import javax.swing.JComponent;
 public class MainFrame extends javax.swing.JFrame {
 
     private ArduinoDevice arduinoDevice;
-
+    private MySqlConnection mySqlConnection;
+    public static final String PROP_MYSQLCONNECTION = "mySqlConnection";
     public static final String PROP_ARDUINODEVICE = "arduinoDevice";
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    /**
+     * Get the value of mySqlConnection
+     *
+     * @return the value of mySqlConnection
+     */
+    public MySqlConnection getMySqlConnection() {
+        return mySqlConnection;
+    }
+
+    /**
+     * Set the value of mySqlConnection
+     *
+     * @param mySqlConnection new value of mySqlConnection
+     */
+    public void setMySqlConnection(MySqlConnection mySqlConnection) {
+        MySqlConnection oldMySqlConnection = this.mySqlConnection;
+        this.mySqlConnection = mySqlConnection;
+        propertyChangeSupport.firePropertyChange(PROP_MYSQLCONNECTION, oldMySqlConnection, mySqlConnection);
+    }
 
     /**
      * Get the value of arduinoDevice
@@ -41,8 +64,6 @@ public class MainFrame extends javax.swing.JFrame {
         this.arduinoDevice = arduinoDevice;
         propertyChangeSupport.firePropertyChange(PROP_ARDUINODEVICE, oldArduinoDevice, arduinoDevice);
     }
-
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**
      * Add PropertyChangeListener.
@@ -65,7 +86,6 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     public MainFrame() {
-
         arduinoDevice = new ArduinoDevice();
         initComponents();
     }

@@ -1,7 +1,7 @@
 package com.convey;
 
 import com.convey.GUI.MainFrame;
-import com.convey.utils.XLSProcessor;
+import com.convey.utils.ProcessRunner;
 
 /**
  * @projectName TEDxGame
@@ -12,6 +12,15 @@ import com.convey.utils.XLSProcessor;
  * @date 04/09/2014 21:25:33
  */
 public class Main {
+
+    private static final String WAMP_PROCESS_ID = "wampmanager.exe";
+    private static final String WAMP_PATH = "C:\\wamp\\wampmanager.exe";
+
+    static {
+        if (!new ProcessRunner().getProcState(WAMP_PROCESS_ID)) {
+            new ProcessRunner().run(WAMP_PATH);
+        }
+    }
 
     public static void main(String args[]) {
 

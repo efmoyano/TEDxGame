@@ -1,5 +1,6 @@
 package com.convey.GUI;
 
+import com.convey.hardware.arduino.ArduinoCommands;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
@@ -168,11 +169,10 @@ public class ArduinoPanel extends javax.swing.JPanel {
             getMainFrame().getArduinoDevice().initialize();
         }
 
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        getMainFrame().getArduinoDevice().sendData(0);
+        getMainFrame().getArduinoDevice().sendData(ArduinoCommands.TEST);
     }//GEN-LAST:event_jButton2ActionPerformed
 
 

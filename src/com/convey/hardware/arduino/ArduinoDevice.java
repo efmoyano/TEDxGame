@@ -125,7 +125,7 @@ public class ArduinoDevice implements SerialPortEventListener {
     public void addArduinoEventListener(final ArduinoEventListener p_listsner) {
 
         if (listeners == null) {
-            listeners = new LinkedList<ArduinoEventListener>();
+            listeners = new LinkedList<>();
         }
         listeners.add(p_listsner);
 
@@ -194,10 +194,12 @@ public class ArduinoDevice implements SerialPortEventListener {
                 serialPort.notifyOnDataAvailable(true);
 
                 if (listeners != null) {
-                    for (ArduinoEventListener listener : listeners) {
+                    listeners.stream().map((listener) -> {
                         listener.onArduinoStateChanged("CONNECTED");
+                        return listener;
+                    }).forEach((listener) -> {
                         listener.onArduinoConnected();
-                    }
+                    });
                 }
 
                 setConnected(true);
@@ -226,9 +228,9 @@ public class ArduinoDevice implements SerialPortEventListener {
             serialPort.removeEventListener();
             serialPort.close();
             if (listeners != null) {
-                for (ArduinoEventListener listener : listeners) {
+                listeners.stream().forEach((listener) -> {
                     listener.onArduinoStateChanged("DISCONNECTED");
-                }
+                });
             }
         }
     }
@@ -256,9 +258,9 @@ public class ArduinoDevice implements SerialPortEventListener {
             @Override
             public void run() {
                 if (listeners != null) {
-                    for (ArduinoEventListener listener : listeners) {
+                    listeners.stream().forEach((listener) -> {
                         listener.onCalculatePacketsPerSecond(packetsPerSecond);
-                    }
+                    });
                 }
                 packetsPerSecond = 0;
             }
@@ -272,13 +274,15 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param p_data
      */
     public void sendData(final String p_data) {
-        try {
-            output.write(p_data.getBytes());
-            output.write('\n');
-            packetsPerSecond++;
-        } catch (IOException ex) {
-            System.err.println(ArduinoDevice.class.getName()
-                    + " Error 4x009 :" + ex.getMessage());
+        if (output != null) {
+            try {
+                output.write(p_data.getBytes());
+                output.write('\n');
+                packetsPerSecond++;
+            } catch (IOException ex) {
+                System.err.println(ArduinoDevice.class.getName()
+                        + " Error 4x009 :" + ex.getMessage());
+            }
         }
     }
 
@@ -288,13 +292,16 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param p_data
      */
     public void sendData(final int p_data) {
-        try {
-            output.write(p_data);
-            output.write('\n');
-            packetsPerSecond++;
-        } catch (IOException ex) {
-            System.err.println(ArduinoDevice.class.getName()
-                    + " Error 4x010 :" + ex.getMessage());
+        if (output != null) {
+
+            try {
+                output.write(p_data);
+                output.write('\n');
+                packetsPerSecond++;
+            } catch (IOException ex) {
+                System.err.println(ArduinoDevice.class.getName()
+                        + " Error 4x010 :" + ex.getMessage());
+            }
         }
     }
 }
