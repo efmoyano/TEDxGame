@@ -269,16 +269,32 @@ public class ArduinoDevice implements SerialPortEventListener {
     /**
      * Send the data over the network
      *
-     * @param data
+     * @param p_data
      */
-    public void sendData(final String data) {
+    public void sendData(final String p_data) {
         try {
-            output.write(data.getBytes());
+            output.write(p_data.getBytes());
             output.write('\n');
             packetsPerSecond++;
         } catch (IOException ex) {
             System.err.println(ArduinoDevice.class.getName()
                     + " Error 4x009 :" + ex.getMessage());
+        }
+    }
+
+    /**
+     * Send the data over the network
+     *
+     * @param p_data
+     */
+    public void sendData(final int p_data) {
+        try {
+            output.write(p_data);
+            output.write('\n');
+            packetsPerSecond++;
+        } catch (IOException ex) {
+            System.err.println(ArduinoDevice.class.getName()
+                    + " Error 4x010 :" + ex.getMessage());
         }
     }
 }
