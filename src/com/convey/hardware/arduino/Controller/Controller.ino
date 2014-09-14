@@ -4,25 +4,30 @@
 String inputString = "";
 boolean stringComplete = false;
 int command = 255;
+int l_delay = 100;
+boolean enabledMeasure = false;
 
 void setup() 
 { 
-  Serial.println("Arduino Serial Comunication Started...");
   Serial.begin(115200);
+  Serial.println("Arduino Serial Comunication Started...");
   pinMode(PIN_TRIG, OUTPUT);
   pinMode(PIN_ECO, INPUT);
 } 
  
 void loop() 
 {
-  measureDistance();
+  if(enabledMeasure){
+    measureDistance();
+  }
+  
   if (stringComplete) {
     stringComplete = false;
-    
     parseCommand();
     inputString = "";
   }
-  delay(100);
+  
+  delay(l_delay);
 } 
 
 void measureDistance(){
@@ -51,17 +56,18 @@ void serialEvent() {
 
 void parseCommand() {
   command = inputString.toInt();  
+  
   switch (command) {
     case 0:
       Serial.println("TEST SERIAL CONNECTION");      
       break;
     
     case 1:
-      Serial.println("Received 1");
+    enabledMeasure = true;
       break;
     
     case 2:
-      Serial.println("Received 2");
+    enabledMeasure = false;
       break;
     
     default: 

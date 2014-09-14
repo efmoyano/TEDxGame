@@ -179,6 +179,9 @@ public class ArduinoDevice implements SerialPortEventListener {
                 f_output = f_serialPort.getOutputStream();
                 f_serialPort.addEventListener(this);
                 f_serialPort.notifyOnDataAvailable(true);
+                f_serialPort.disableReceiveTimeout();
+                f_serialPort.enableReceiveThreshold(1);
+
                 if (f_listeners != null) {
                     f_listeners.stream().map((listener) -> {
                         listener.onArduinoStateChanged("CONNECTED");
@@ -187,6 +190,7 @@ public class ArduinoDevice implements SerialPortEventListener {
                         listener.onArduinoConnected();
                     });
                 }
+
                 setConnected(true);
             } catch (TooManyListenersException e) {
                 setConnected(false);
@@ -216,6 +220,7 @@ public class ArduinoDevice implements SerialPortEventListener {
                     listener.onArduinoStateChanged("DISCONNECTED");
                 });
             }
+            setConnected(false);
         }
     }
 
@@ -240,7 +245,6 @@ public class ArduinoDevice implements SerialPortEventListener {
     }
 
     private void initPacketsPerSecondCounter() {
-
         final Timer l_timerMetters = new Timer("Arduino pps Counter");
         l_timerMetters.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -253,7 +257,6 @@ public class ArduinoDevice implements SerialPortEventListener {
                 f_packetsPerSecond = 0;
             }
         }, 0, 1000);
-
     }
 
     /**
@@ -264,8 +267,7 @@ public class ArduinoDevice implements SerialPortEventListener {
     public void sendData(final String p_data) {
         if (f_output != null) {
             try {
-                f_output.write(p_data.getBytes());
-                f_output.write('\n');
+                f_output.write((p_data + "\n").getBytes());
                 f_packetsPerSecond++;
             } catch (IOException ex) {
                 System.err.println(ArduinoDevice.class
@@ -284,8 +286,7 @@ public class ArduinoDevice implements SerialPortEventListener {
         if (f_output != null) {
 
             try {
-                f_output.write(p_data);
-                f_output.write('\n');
+                f_output.write((p_data + "\n").getBytes());
                 f_packetsPerSecond++;
             } catch (IOException ex) {
                 System.err.println(ArduinoDevice.class
