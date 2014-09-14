@@ -1,6 +1,7 @@
 package com.convey.GUI;
 
 import com.convey.hardware.arduino.ArduinoDevice;
+import com.convey.hardware.arduino.ArduinoEventListener;
 import com.convey.services.MySqlConnection;
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
@@ -24,6 +25,28 @@ public class MainFrame extends javax.swing.JFrame {
     public static final String PROP_MYSQLCONNECTION = "mySqlConnection";
     public static final String PROP_ARDUINODEVICE = "arduinoDevice";
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private int proximityDistance = 0;
+    public static final String PROP_PROXIMITYDISTANCE = "proximityDistance";
+
+    /**
+     * Get the value of proximityDistance
+     *
+     * @return the value of proximityDistance
+     */
+    public int getProximityDistance() {
+        return proximityDistance;
+    }
+
+    /**
+     * Set the value of proximityDistance
+     *
+     * @param proximityDistance new value of proximityDistance
+     */
+    public void setProximityDistance(int proximityDistance) {
+        int oldProximityDistance = this.proximityDistance;
+        this.proximityDistance = proximityDistance;
+        propertyChangeSupport.firePropertyChange(PROP_PROXIMITYDISTANCE, oldProximityDistance, proximityDistance);
+    }
 
     /**
      * Get the value of mySqlConnection
@@ -86,7 +109,33 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     public MainFrame() {
+
         arduinoDevice = new ArduinoDevice();
+
+        arduinoDevice.addArduinoEventListener(new ArduinoEventListener() {
+
+            @Override
+            public void onArduinoStateChanged(String p_status) {
+                System.out.println("State changed : " + p_status);
+            }
+
+            @Override
+            public void onCalculatePacketsPerSecond(int p_pps) {
+
+            }
+
+            @Override
+            public void onArduinoConnected() {
+                System.out.println("Arduino Connected");
+            }
+
+            @Override
+            public void onMessageReceived(String p_message) {
+                setProximityDistance(Integer.parseInt(p_message));
+                System.out.println(getProximityDistance());
+            }
+        });
+        
         initComponents();
     }
 

@@ -28,4 +28,10 @@ public interface ArduinoEventListener {
      */
     public void onArduinoConnected();
 
+    /**
+     *
+     * @param p_message
+     */
+    public void onMessageReceived(String p_message);
+
 }

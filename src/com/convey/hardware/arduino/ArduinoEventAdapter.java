@@ -24,4 +24,8 @@ public class ArduinoEventAdapter implements ArduinoEventListener {
     public void onArduinoConnected() {
 
     }
+
+    @Override
+    public void onMessageReceived(String p_message) {
+    }
 }
