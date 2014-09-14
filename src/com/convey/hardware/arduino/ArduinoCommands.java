@@ -15,4 +15,14 @@ public class ArduinoCommands {
      */
     public static final int TEST = 0;
 
+    /**
+     *
+     */
+    public static final int ENABLE_MEASURE = 1;
+
+    /**
+     *
+     */
+    public static final int DISABLE_MEASURE = 2;
+
 }

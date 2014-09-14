@@ -3,6 +3,8 @@ package com.convey.GUI;
 import com.convey.hardware.arduino.ArduinoDevice;
 import com.convey.hardware.arduino.ArduinoEventListener;
 import com.convey.services.MySqlConnection;
+import com.convey.utils.Utils;
+import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -27,6 +29,28 @@ public class MainFrame extends javax.swing.JFrame {
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private int proximityDistance = 0;
     public static final String PROP_PROXIMITYDISTANCE = "proximityDistance";
+    private Color color;
+    public static final String PROP_COLOR = "color";
+
+    /**
+     * Get the value of color
+     *
+     * @return the value of color
+     */
+    public Color getColor() {
+        return color;
+    }
+
+    /**
+     * Set the value of color
+     *
+     * @param color new value of color
+     */
+    public void setColor(Color color) {
+        Color oldColor = this.color;
+        this.color = color;
+        propertyChangeSupport.firePropertyChange(PROP_COLOR, oldColor, color);
+    }
 
     /**
      * Get the value of proximityDistance
@@ -131,11 +155,13 @@ public class MainFrame extends javax.swing.JFrame {
 
             @Override
             public void onMessageReceived(String p_message) {
+                System.out.println(p_message);
                 setProximityDistance(Integer.parseInt(p_message));
-                System.out.println(getProximityDistance());
+                setColor(Utils.getRGB(0, 50, Integer.parseInt(p_message)));
+
             }
         });
-        
+
         initComponents();
     }
 
