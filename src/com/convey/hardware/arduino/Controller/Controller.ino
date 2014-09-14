@@ -1,24 +1,43 @@
+#define PIN_TRIG 12
+#define PIN_ECO  13
+
 String inputString = "";
 boolean stringComplete = false;
 int command = 255;
-int f_ledTest = 13;  
 
 void setup() 
 { 
   Serial.println("Arduino Serial Comunication Started...");
   Serial.begin(115200);
-  pinMode(f_ledTest, OUTPUT);   
+  pinMode(PIN_TRIG, OUTPUT);
+  pinMode(PIN_ECO, INPUT);
 } 
  
 void loop() 
-{ 
+{
+  measureDistance();
   if (stringComplete) {
     stringComplete = false;
     
     parseCommand();
     inputString = "";
-  } // end if
+  }
+  delay(100);
 } 
+
+void measureDistance(){
+  long duracion, distancia;
+  digitalWrite(PIN_TRIG, LOW);  
+  delayMicroseconds(2); 
+  digitalWrite(PIN_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG, LOW);  
+  duracion = pulseIn(PIN_ECO, HIGH);
+  distancia = (duracion/2) / 29;
+  if (!(distancia >= 400 || distancia <= 0)){
+    Serial.println(distancia);
+  }
+}
 
 void serialEvent() {
   while (Serial.available()) {
@@ -34,9 +53,9 @@ void parseCommand() {
   command = inputString.toInt();  
   switch (command) {
     case 0:
-      ledTest();
+      Serial.println("TEST SERIAL CONNECTION");      
       break;
-      
+    
     case 1:
       Serial.println("Received 1");
       break;
@@ -49,11 +68,3 @@ void parseCommand() {
     Serial.println("Unknow command");
   }
 }
-
-void ledTest() {
-  digitalWrite(f_ledTest, HIGH);
-  delay(1000);
-  digitalWrite(f_ledTest, LOW);
-  delay(1000);
-}
-

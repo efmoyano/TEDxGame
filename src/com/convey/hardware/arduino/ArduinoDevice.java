@@ -29,16 +29,15 @@ import javax.swing.JOptionPane;
  */
 public class ArduinoDevice implements SerialPortEventListener {
 
-    private transient SerialPort serialPort;
-    private transient BufferedReader input;
-    private transient OutputStream output;
-    private int dataRate;
-    private String port;
-    private boolean connected = false;
-    private transient int packetsPerSecond = 0;
-    private List<ArduinoEventListener> listeners;
-
-    private List<Integer> dataRates = Arrays.asList(300, 1200, 2400, 4800,
+    private transient SerialPort f_serialPort;
+    private transient BufferedReader f_input;
+    private transient OutputStream f_output;
+    private int f_dataRate;
+    private String f_port;
+    private boolean f_connected = false;
+    private transient int f_packetsPerSecond = 0;
+    private List<ArduinoEventListener> f_listeners;
+    private List<Integer> f_dataRates = Arrays.asList(300, 1200, 2400, 4800,
             9600, 14400, 19200, 28800, 38400, 57600, 115200);
 
     /**
@@ -48,7 +47,7 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @return
      */
     public List<Integer> getDataRates() {
-        return dataRates;
+        return f_dataRates;
     }
 
     /**
@@ -58,7 +57,7 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param p_dataRates
      */
     public void setDataRates(final List<Integer> p_dataRates) {
-        this.dataRates = p_dataRates;
+        this.f_dataRates = p_dataRates;
     }
 
     /**
@@ -67,7 +66,7 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @return
      */
     public boolean isConnected() {
-        return connected;
+        return f_connected;
     }
 
     /**
@@ -77,25 +76,25 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param connected
      */
     public void setConnected(final boolean connected) {
-        this.connected = connected;
+        this.f_connected = connected;
     }
 
     /**
-     * Get port setted to connect to Arduino device
+     * Get f_port setted to connect to Arduino device
      *
      * @return
      */
     public String getPort() {
-        return port;
+        return f_port;
     }
 
     /**
-     * Set the port to connect to Arduino device
+     * Set the f_port to connect to Arduino device
      *
      * @param port
      */
     public void setPort(final String port) {
-        this.port = port;
+        this.f_port = port;
     }
 
     /**
@@ -104,7 +103,7 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @return
      */
     public int getDataRate() {
-        return dataRate;
+        return f_dataRate;
     }
 
     /**
@@ -113,7 +112,7 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param dataRate
      */
     public void setDataRate(final int dataRate) {
-        this.dataRate = dataRate;
+        this.f_dataRate = dataRate;
     }
 
     /**
@@ -123,12 +122,10 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param p_listsner
      */
     public void addArduinoEventListener(final ArduinoEventListener p_listsner) {
-
-        if (listeners == null) {
-            listeners = new LinkedList<>();
+        if (f_listeners == null) {
+            f_listeners = new LinkedList<>();
         }
-        listeners.add(p_listsner);
-
+        f_listeners.add(p_listsner);
     }
 
     /**
@@ -137,73 +134,60 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @return LinkedList containing all the ports
      */
     public LinkedList getAvailablesPorts() {
-        final LinkedList ports = new LinkedList();
+        final LinkedList l_ports = new LinkedList();
         try {
-            final Enumeration puertoEnum = CommPortIdentifier.getPortIdentifiers();
-
-            while (puertoEnum.hasMoreElements()) {
-
-                final CommPortIdentifier actualPuertoID = (CommPortIdentifier) puertoEnum.nextElement();
-                ports.add(actualPuertoID.getName());
+            final Enumeration l_puertoEnum = CommPortIdentifier.getPortIdentifiers();
+            while (l_puertoEnum.hasMoreElements()) {
+                final CommPortIdentifier actualPuertoID = (CommPortIdentifier) l_puertoEnum.nextElement();
+                l_ports.add(actualPuertoID.getName());
             }
         } catch (UnsatisfiedLinkError ex) {
             System.err.println(ArduinoDevice.class.getName() + " Error 4x001 :" + ex.getMessage());
         } catch (NoClassDefFoundError ex) {
             System.err.println(ArduinoDevice.class.getName() + " Error 4x002 :" + ex.getMessage());
         }
-
-        return ports;
+        return l_ports;
     }
 
     /**
-     * Initialize the serial port comunication
+     * Initialize the serial f_port comunication
      */
     public void initialize() {
-
         initPacketsPerSecondCounter();
-        CommPortIdentifier puertoID = null;
-        final Enumeration puertoEnum = CommPortIdentifier.getPortIdentifiers();
-
-        while (puertoEnum.hasMoreElements()) {
-            CommPortIdentifier actualPuertoID = (CommPortIdentifier) puertoEnum.nextElement();
-
-            if (port.equals(actualPuertoID.getName())) {
-                puertoID = actualPuertoID;
+        CommPortIdentifier l_portID = null;
+        final Enumeration l_puertoEnum = CommPortIdentifier.getPortIdentifiers();
+        while (l_puertoEnum.hasMoreElements()) {
+            CommPortIdentifier l_actualPortID = (CommPortIdentifier) l_puertoEnum.nextElement();
+            if (f_port.equals(l_actualPortID.getName())) {
+                l_portID = l_actualPortID;
                 break;
             }
         }
-
-        if (puertoID == null) {
+        if (l_portID == null) {
             JOptionPane.showMessageDialog(null, "No ports avalaible");
             System.err.println(ArduinoDevice.class.getName() + " Error 4x003 :No ports avalaible");
             setConnected(false);
         } else {
             try {
-                serialPort = (SerialPort) puertoID.open(this.getClass().getName(),
+                f_serialPort = (SerialPort) l_portID.open(this.getClass().getName(),
                         2000);
-
-                serialPort.setSerialPortParams(dataRate,
+                f_serialPort.setSerialPortParams(f_dataRate,
                         SerialPort.DATABITS_8,
                         SerialPort.STOPBITS_1,
                         SerialPort.PARITY_NONE);
-
-                input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
-                output = serialPort.getOutputStream();
-
-                serialPort.addEventListener(this);
-                serialPort.notifyOnDataAvailable(true);
-
-                if (listeners != null) {
-                    listeners.stream().map((listener) -> {
+                f_input = new BufferedReader(new InputStreamReader(f_serialPort.getInputStream()));
+                f_output = f_serialPort.getOutputStream();
+                f_serialPort.addEventListener(this);
+                f_serialPort.notifyOnDataAvailable(true);
+                if (f_listeners != null) {
+                    f_listeners.stream().map((listener) -> {
                         listener.onArduinoStateChanged("CONNECTED");
                         return listener;
                     }).forEach((listener) -> {
                         listener.onArduinoConnected();
                     });
                 }
-
                 setConnected(true);
-
             } catch (TooManyListenersException e) {
                 setConnected(false);
                 System.err.println(ArduinoDevice.class.getName() + " Error 4x004 :" + e.getMessage());
@@ -224,11 +208,11 @@ public class ArduinoDevice implements SerialPortEventListener {
      * This method should be called to allow serial flush for systems like linux
      */
     public synchronized void close() {
-        if (serialPort != null) {
-            serialPort.removeEventListener();
-            serialPort.close();
-            if (listeners != null) {
-                listeners.stream().forEach((listener) -> {
+        if (f_serialPort != null) {
+            f_serialPort.removeEventListener();
+            f_serialPort.close();
+            if (f_listeners != null) {
+                f_listeners.stream().forEach((listener) -> {
                     listener.onArduinoStateChanged("DISCONNECTED");
                 });
             }
@@ -236,33 +220,37 @@ public class ArduinoDevice implements SerialPortEventListener {
     }
 
     /**
-     * This method is triggered when data is present in the serial port
+     * This method is triggered when data is present in the serial f_port
      *
      * @param serialPortEvent
      */
     @Override
     public synchronized void serialEvent(SerialPortEvent serialPortEvent) {
         if (serialPortEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-            try {
-                System.out.println("Received: " + input.readLine());
-            } catch (IOException e) {
-                System.err.println(ArduinoDevice.class.getName() + " Error 4x008 :" + e.getMessage());
+            if (f_listeners != null) {
+                f_listeners.stream().forEach((ArduinoEventListener listener) -> {
+                    try {
+                        listener.onMessageReceived(f_input.readLine());
+                    } catch (IOException e) {
+                        System.err.println(ArduinoDevice.class.getName() + " Error 4x008 :" + e.getMessage());
+                    }
+                });
             }
         }
     }
 
     private void initPacketsPerSecondCounter() {
 
-        final Timer timerMetters = new Timer("Arduino pps Counter");
-        timerMetters.scheduleAtFixedRate(new TimerTask() {
+        final Timer l_timerMetters = new Timer("Arduino pps Counter");
+        l_timerMetters.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (listeners != null) {
-                    listeners.stream().forEach((listener) -> {
-                        listener.onCalculatePacketsPerSecond(packetsPerSecond);
+                if (f_listeners != null) {
+                    f_listeners.stream().forEach((listener) -> {
+                        listener.onCalculatePacketsPerSecond(f_packetsPerSecond);
                     });
                 }
-                packetsPerSecond = 0;
+                f_packetsPerSecond = 0;
             }
         }, 0, 1000);
 
@@ -274,13 +262,14 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param p_data
      */
     public void sendData(final String p_data) {
-        if (output != null) {
+        if (f_output != null) {
             try {
-                output.write(p_data.getBytes());
-                output.write('\n');
-                packetsPerSecond++;
+                f_output.write(p_data.getBytes());
+                f_output.write('\n');
+                f_packetsPerSecond++;
             } catch (IOException ex) {
-                System.err.println(ArduinoDevice.class.getName()
+                System.err.println(ArduinoDevice.class
+                        .getName()
                         + " Error 4x009 :" + ex.getMessage());
             }
         }
@@ -292,14 +281,15 @@ public class ArduinoDevice implements SerialPortEventListener {
      * @param p_data
      */
     public void sendData(final int p_data) {
-        if (output != null) {
+        if (f_output != null) {
 
             try {
-                output.write(p_data);
-                output.write('\n');
-                packetsPerSecond++;
+                f_output.write(p_data);
+                f_output.write('\n');
+                f_packetsPerSecond++;
             } catch (IOException ex) {
-                System.err.println(ArduinoDevice.class.getName()
+                System.err.println(ArduinoDevice.class
+                        .getName()
                         + " Error 4x010 :" + ex.getMessage());
             }
         }
