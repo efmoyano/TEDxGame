@@ -135,6 +135,10 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
 
         arduinoDevice = new ArduinoDevice();
+        
+        
+
+        mySqlConnection = new MySqlConnection();
 
         arduinoDevice.addArduinoEventListener(new ArduinoEventListener() {
 
@@ -211,6 +215,11 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu2.setText("Tools");
 
         jMenuItem2.setText("Load Questions");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem2);
 
         jMenuBar1.add(jMenu2);
@@ -244,6 +253,17 @@ public class MainFrame extends javax.swing.JFrame {
     private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem3ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+
+        try {
+            DataBasePanel dataBasePanel = new DataBasePanel(this);
+            installNewPanel(dataBasePanel);
+        } catch (Exception ex) {
+            error(ex);
+        }
+
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     public void installNewPanel(JComponent p_component) {
         Component l_last = getContentPane().getComponent(0);
