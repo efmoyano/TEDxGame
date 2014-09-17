@@ -3,14 +3,27 @@ package com.convey.GUI;
 import com.convey.hardware.arduino.ArduinoDevice;
 import com.convey.hardware.arduino.ArduinoEventListener;
 import com.convey.services.MySqlConnection;
+import com.convey.utils.ProcessPaths;
+import com.convey.utils.ProcessRunner;
 import com.convey.utils.Utils;
+import java.awt.AWTException;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GraphicsEnvironment;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
 
 /**
  * @projectName TEDxGame
@@ -135,8 +148,6 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
 
         arduinoDevice = new ArduinoDevice();
-        
-        
 
         mySqlConnection = new MySqlConnection();
 
@@ -177,10 +188,14 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -210,6 +225,14 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem3);
 
+        jMenuItem4.setText("ScreenSaver");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem4);
+
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Tools");
@@ -235,6 +258,27 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu3.add(jMenuItem1);
 
         jMenuBar1.add(jMenu3);
+
+        jMenu4.setText("Window");
+
+        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem5.setText("Full Screen");
+        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem5ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem5);
+
+        jMenuItem6.setText("Run Screensaver");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jMenuItem6);
+
+        jMenuBar1.add(jMenu4);
 
         setJMenuBar(jMenuBar1);
 
@@ -265,6 +309,34 @@ public class MainFrame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        ScreenSaver();
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        this.dispose();
+        this.setUndecorated(true);
+        this.setResizable(false);
+        this.validate();
+        GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
+    }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        new ProcessRunner().run(ProcessPaths.SCREENSAVER_PATH);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            Robot robot = new Robot();
+            robot.mousePress(InputEvent.BUTTON1_MASK);
+            robot.mouseRelease(InputEvent.BUTTON1_MASK);
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
     public void installNewPanel(JComponent p_component) {
         Component l_last = getContentPane().getComponent(0);
         if (l_last != null) {
@@ -278,14 +350,41 @@ public class MainFrame extends javax.swing.JFrame {
         Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
     }
 
+    public void ScreenSaver() {
+
+        try {
+
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            final JFrame screenSaverFrame = new JFrame();
+            screenSaverFrame.setDefaultCloseOperation(
+                    WindowConstants.EXIT_ON_CLOSE);
+            screenSaverFrame.setUndecorated(true);
+            screenSaverFrame.setResizable(false);
+            screenSaverFrame.add(new JLabel("This is a Java Screensaver!",
+                    SwingConstants.CENTER), BorderLayout.CENTER);
+            screenSaverFrame.validate();
+            GraphicsEnvironment.getLocalGraphicsEnvironment()
+                    .getDefaultScreenDevice()
+                    .setFullScreenWindow(screenSaverFrame);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JPanel mainPanel;
     // End of variables declaration//GEN-END:variables
 }
