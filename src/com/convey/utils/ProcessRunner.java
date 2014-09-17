@@ -3,8 +3,6 @@ package com.convey.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,14 +22,13 @@ public class ProcessRunner {
      */
     public void run(String p_path) {
         try {
-            ProcessBuilder builder = new ProcessBuilder(new String[]{"cmd.exe", "/C", p_path});
-            Process newProcess = builder.start();
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ProcessRunner.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            newProcess.destroy();
+            Process newProcess = new ProcessBuilder(new String[]{"cmd.exe", "/C", p_path}).start();
+//            try {
+//                Thread.sleep(5000);
+//            } catch (InterruptedException ex) {
+//                Logger.getLogger(ProcessRunner.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//            newProcess.destroy();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

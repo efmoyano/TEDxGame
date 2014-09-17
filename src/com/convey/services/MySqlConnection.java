@@ -1,5 +1,6 @@
 package com.convey.services;
 
+import com.convey.properties.PropertiesHandler;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.sql.CallableStatement;
@@ -8,6 +9,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -22,14 +25,69 @@ import javax.swing.JOptionPane;
  */
 public class MySqlConnection {
 
-    private Connection f_conection;
-    private Statement f_statement;
-    private String f_password;
-    private String f_user;
-    private String f_ip;
-    private String f_dataBase;
-
+    private Connection conection;
+    private Statement statement;
+    private String password;
+    public static final String PROP_PASSWORD = "password";
+    private String user;
+    public static final String PROP_USER = "user";
+    private String ip;
+    public static final String PROP_IP = "ip";
+    private String dataBase;
     public static final String PROP_DATABASE = "dataBase";
+    private PropertiesHandler l_mysqlPropertiesHandler;
+    public static final String PROP_MYSQLPROPERTIESHANDLER = "MysqlPropertiesHandler";
+    private Map<String, String> l_mySqlProperties;
+
+    /**
+     * Get the value of l_mySqlProperties
+     *
+     * @return the value of l_mySqlProperties
+     */
+    public Map<String, String> getMySqlproperties() {
+        return l_mySqlProperties;
+    }
+
+    /**
+     * Set the value of l_mySqlProperties
+     *
+     * @param MySqlproperties new value of l_mySqlProperties
+     */
+    public void setMySqlproperties(Map<String, String> MySqlproperties) {
+        this.l_mySqlProperties = MySqlproperties;
+    }
+
+    /**
+     * Get the value of l_mysqlPropertiesHandler
+     *
+     * @return the value of l_mysqlPropertiesHandler
+     */
+    public PropertiesHandler getMysqlPropertiesHandler() {
+        return l_mysqlPropertiesHandler;
+    }
+
+    /**
+     * Set the value of l_mysqlPropertiesHandler
+     *
+     * @param MysqlPropertiesHandler new value of l_mysqlPropertiesHandler
+     */
+    public void setMysqlPropertiesHandler(PropertiesHandler MysqlPropertiesHandler) {
+        PropertiesHandler oldMysqlPropertiesHandler = this.l_mysqlPropertiesHandler;
+        this.l_mysqlPropertiesHandler = MysqlPropertiesHandler;
+        propertyChangeSupport.firePropertyChange(PROP_MYSQLPROPERTIESHANDLER, oldMysqlPropertiesHandler, MysqlPropertiesHandler);
+    }
+
+    public MySqlConnection() {
+        l_mySqlProperties = new HashMap<>();
+        l_mysqlPropertiesHandler = new PropertiesHandler();
+        l_mysqlPropertiesHandler.setFileName(this.getClass().getSimpleName());
+        l_mysqlPropertiesHandler.loadProperties();
+        this.setIp(l_mysqlPropertiesHandler.getProperty(PROP_IP));
+        this.setDataBase(l_mysqlPropertiesHandler.getProperty(PROP_DATABASE));
+        this.setUser(l_mysqlPropertiesHandler.getProperty(PROP_USER));
+        this.setPassword(l_mysqlPropertiesHandler.getProperty(PROP_PASSWORD));
+
+    }
 
     /**
      * Get the value of f_dataBase
@@ -37,7 +95,7 @@ public class MySqlConnection {
      * @return the value of f_dataBase
      */
     public String getDataBase() {
-        return f_dataBase;
+        return dataBase;
     }
 
     /**
@@ -45,13 +103,12 @@ public class MySqlConnection {
      *
      * @param p_dataBase new value of f_dataBase
      */
-    public void setDataBase(String p_dataBase) {
-        String oldDataBase = this.f_dataBase;
-        this.f_dataBase = p_dataBase;
+    public final void setDataBase(String p_dataBase) {
+        String oldDataBase = this.dataBase;
+        l_mySqlProperties.put(PROP_DATABASE, this.dataBase);
+        this.dataBase = p_dataBase;
         propertyChangeSupport.firePropertyChange(PROP_DATABASE, oldDataBase, p_dataBase);
     }
-
-    public static final String PROP_IP = "ip";
 
     /**
      * Get the value of f_ip
@@ -59,7 +116,7 @@ public class MySqlConnection {
      * @return the value of f_ip
      */
     public String getIp() {
-        return f_ip;
+        return ip;
     }
 
     /**
@@ -67,13 +124,12 @@ public class MySqlConnection {
      *
      * @param ip new value of f_ip
      */
-    public void setIp(String ip) {
-        String oldIp = this.f_ip;
-        this.f_ip = ip;
+    public final void setIp(String ip) {
+        String oldIp = this.ip;
+        l_mySqlProperties.put(PROP_IP, this.ip);
+        this.ip = ip;
         propertyChangeSupport.firePropertyChange(PROP_IP, oldIp, ip);
     }
-
-    public static final String PROP_USER = "user";
 
     /**
      * Get the value of f_user
@@ -81,7 +137,7 @@ public class MySqlConnection {
      * @return the value of f_user
      */
     public String getUser() {
-        return f_user;
+        return user;
     }
 
     /**
@@ -89,13 +145,12 @@ public class MySqlConnection {
      *
      * @param user new value of f_user
      */
-    public void setUser(String user) {
-        String oldUser = this.f_user;
-        this.f_user = user;
+    public final void setUser(String user) {
+        String oldUser = this.user;
+        l_mySqlProperties.put(PROP_USER, this.user);
+        this.user = user;
         propertyChangeSupport.firePropertyChange(PROP_USER, oldUser, user);
     }
-
-    public static final String PROP_PASSWORD = "password";
 
     /**
      * Get the value of f_password
@@ -103,7 +158,7 @@ public class MySqlConnection {
      * @return the value of f_password
      */
     public String getPassword() {
-        return f_password;
+        return password;
     }
 
     /**
@@ -111,9 +166,10 @@ public class MySqlConnection {
      *
      * @param password new value of f_password
      */
-    public void setPassword(String password) {
-        String oldPassword = this.f_password;
-        this.f_password = password;
+    public final void setPassword(String password) {
+        String oldPassword = this.password;
+        l_mySqlProperties.put(PROP_PASSWORD, this.password);
+        this.password = password;
         propertyChangeSupport.firePropertyChange(PROP_PASSWORD, oldPassword, password);
     }
 
@@ -138,27 +194,27 @@ public class MySqlConnection {
     }
 
     public boolean connect() {
-        f_conection = null;
+        conection = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            f_conection = DriverManager.getConnection("jdbc:mysql://" + f_ip + "/" + f_dataBase, f_user, f_password);
+            conection = DriverManager.getConnection("jdbc:mysql://" + ip + "/" + dataBase, user, password);
 
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Error: " + ex.getMessage());
         }
-        if (f_conection != null) {
-            JOptionPane.showMessageDialog(null, "Conexion Exitosa");
+        if (conection != null) {
+            JOptionPane.showMessageDialog(null, "Connection Successful");
             return true;
         } else {
-            JOptionPane.showMessageDialog(null, "No se pudo conectar a BD");
+            JOptionPane.showMessageDialog(null, "Could not connect to DB");
             return false;
         }
     }
 
     public void execute(String p_query) {
         try {
-            f_statement = f_conection.createStatement();
-            f_statement.execute(p_query);
+            statement = conection.createStatement();
+            statement.execute(p_query);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -167,8 +223,8 @@ public class MySqlConnection {
     public ResultSet query(String p_query) {
         ResultSet reg = null;
         try {
-            f_statement = f_conection.createStatement();
-            reg = f_statement.executeQuery(p_query);
+            statement = conection.createStatement();
+            reg = statement.executeQuery(p_query);
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -185,7 +241,7 @@ public class MySqlConnection {
 
     public void addPeople(String firstName, String lastName, String telephone, String email, String ivaDetail, String type) {
         try {
-            CallableStatement callableStatement = f_conection.prepareCall("{ call AddPeople(?,?,?,?,?,?) }");
+            CallableStatement callableStatement = conection.prepareCall("{ call AddPeople(?,?,?,?,?,?) }");
             callableStatement.setString(1, firstName);
             callableStatement.setString(2, lastName);
             callableStatement.setString(3, telephone);

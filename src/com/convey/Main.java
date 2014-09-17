@@ -1,6 +1,7 @@
 package com.convey;
 
 import com.convey.GUI.MainFrame;
+import com.convey.utils.ProcessPaths;
 import com.convey.utils.ProcessRunner;
 
 /**
@@ -13,12 +14,9 @@ import com.convey.utils.ProcessRunner;
  */
 public class Main {
 
-    private static final String WAMP_PROCESS_ID = "wampmanager.exe";
-    private static final String WAMP_PATH = "C:\\wamp\\wampmanager.exe";
-
     static {
-        if (!new ProcessRunner().getProcState(WAMP_PROCESS_ID)) {
-            new ProcessRunner().run(WAMP_PATH);
+        if (!new ProcessRunner().getProcState(ProcessPaths.WAMP_PROCESS_ID)) {
+            new ProcessRunner().run(ProcessPaths.WAMP_PATH);
         }
     }
 

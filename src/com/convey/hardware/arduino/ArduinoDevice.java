@@ -119,8 +119,8 @@ public class ArduinoDevice implements SerialPortEventListener {
         l_arduinoPropHandler = new PropertiesHandler();
         l_arduinoPropHandler.setFileName(this.getClass().getSimpleName());
         l_arduinoPropHandler.loadProperties();
-        System.out.println(l_arduinoPropHandler.getProperty(PROP_PORT));
-        System.out.println(l_arduinoPropHandler.getProperty("dataRate"));
+        this.setPort(l_arduinoPropHandler.getProperty(PROP_PORT));
+        this.setDataRate(Integer.parseInt(l_arduinoPropHandler.getProperty(PROP_DATARATE)));
     }
 
     /**
@@ -176,7 +176,7 @@ public class ArduinoDevice implements SerialPortEventListener {
      *
      * @param port
      */
-    public void setPort(final String port) {
+    public final void setPort(final String port) {
         this.port = port;
         l_ArduioProperties.put(PROP_PORT, this.port);
         String oldPort = this.port;
@@ -198,7 +198,7 @@ public class ArduinoDevice implements SerialPortEventListener {
      *
      * @param dataRate
      */
-    public void setDataRate(final int dataRate) {
+    public final void setDataRate(final int dataRate) {
         this.dataRate = dataRate;
         l_ArduioProperties.put(PROP_DATARATE, this.dataRate + "");
         int oldDataRate = this.dataRate;
