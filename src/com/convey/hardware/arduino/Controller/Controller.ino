@@ -13,10 +13,11 @@
 
 // Variables
 String f_inputString = "";
-boolean f_f_enabledMeasure = false;
+boolean f_stringComplete = false;
 int f_command = 255;
 int l_delay = 100;
-boolean enabledMeasure = false;
+boolean f_enabledMeasure = false;
+long oldDistance = 0;
 
 short Button1 = 230;
 short Button2 = 365;
@@ -90,15 +91,16 @@ void loop()
   // Button loop binding
   ButtonEvent.loop();
   
-  if(enabledMeasure){
+  if(f_enabledMeasure){
     measureDistance();
   }
   
-  if (f_f_enabledMeasure) {
-    f_f_enabledMeasure = false;
+  if (f_stringComplete) {
+    f_stringComplete = false;
     parseCommand();
     f_inputString = "";
   }
+  delay(50);
 } 
 
 void measureDistance(){
@@ -111,7 +113,10 @@ void measureDistance(){
   l_duracion = pulseIn(DG_PIN_ECO, HIGH);
   l_distancia = (l_duracion/2) / 29;
   if (!(l_distancia >= 400 || l_distancia <= 0)){
-    Serial.println(l_distancia);
+    if(oldDistance != l_distancia){
+      Serial.println("1x"+String(l_distancia));
+      oldDistance = l_distancia;
+    }
   }
 }
 
@@ -121,7 +126,7 @@ void serialEvent() {
     char l_inChar = (char)Serial.read(); 
     f_inputString += l_inChar;
     if (l_inChar == '\n') {
-      f_f_enabledMeasure = true;
+      f_stringComplete = true;
     } 
   }
 }
@@ -132,32 +137,29 @@ void parseCommand() {
   
   switch (f_command) {
     case 0:
-      Serial.println("TEST SERIAL CONNECTION");      
+      Serial.println("0xHello human, i'm working fine ");      
       break;
-    
     case 1:
-    enabledMeasure = true;
+    f_enabledMeasure = true;
       break;
-    
     case 2:
-    enabledMeasure = false;
+    f_enabledMeasure = false;
       break;
-    
     default: 
-    Serial.println("Unknow f_command");
+    Serial.println("0xUnknow command");
   }
 }
 
 void onDown(ButtonInformation* Sender) {
   buzz(100,250);
   if (Sender->analogValue == Button1)
-    Serial.print(1);
+    Serial.println("2x1");
   else if (Sender->analogValue == Button2)
-    Serial.print(2);
+    Serial.println("2x2");
   else if (Sender->analogValue == Button3)
-    Serial.print(3);
+    Serial.println("2x3");
   else if (Sender->analogValue == Button4)
-    Serial.print(4);
+    Serial.println("2x4");
 }
 
 void onUp(ButtonInformation* Sender) {

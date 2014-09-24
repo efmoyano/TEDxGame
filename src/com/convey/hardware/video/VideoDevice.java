@@ -1,6 +1,5 @@
 package com.convey.hardware.video;
 
-import com.convey.utils.Utils;
 import com.googlecode.javacv.cpp.videoInputLib.videoInput;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -154,7 +153,7 @@ public final class VideoDevice {
      */
     public void addDeviceEventListener(DeviceEventListener p_deviceListener) {
         if (deviceListeners == null) {
-            deviceListeners = new LinkedList<DeviceEventListener>();
+            deviceListeners = new LinkedList<>();
         }
         deviceListeners.add(p_deviceListener);
     }
@@ -318,19 +317,6 @@ public final class VideoDevice {
         } catch (NoClassDefFoundError ex) {
             System.out.println(VideoDevice.class.getName() + " Error 0x003: " + ex.getMessage());
         }
-    }
-
-    /**
-     * Sets the resolution of the device as String
-     *
-     * @param p_resolution
-     */
-    public void setResolution(String p_resolution) {
-
-        int l_components[] = Utils.getComponents(p_resolution, "x");
-
-        setResolution(l_components[0], l_components[1]);
-
     }
 
     /**
