@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 /**
@@ -151,9 +152,10 @@ public class MainFrame extends javax.swing.JFrame {
         mySqlConnection = new MySqlConnection();
 
         arduinoDevice.addArduinoEventListener(new ArduinoEventListener() {
+            private String[] l_components;
+
             @Override
             public void onArduinoStateChanged(String p_status) {
-                System.out.println("State changed : " + p_status);
             }
 
             @Override
@@ -163,15 +165,24 @@ public class MainFrame extends javax.swing.JFrame {
 
             @Override
             public void onArduinoConnected() {
-                System.out.println("Arduino Connected");
             }
 
             @Override
             public void onMessageReceived(String p_message) {
 
-                setProximityDistance(Integer.parseInt(p_message));
-                setColor(Utils.getRGB(0, 50, Integer.parseInt(p_message)));
-
+                l_components = p_message.split("x");
+                switch (l_components[0]) {
+                    case "0":
+                        JOptionPane.showMessageDialog(null, l_components[1]);
+                        break;
+                    case "1":
+                        setProximityDistance(Integer.parseInt(l_components[1]));
+                        setColor(Utils.getRGB(0, 50, Integer.parseInt(l_components[1])));
+                        break;
+                    case "2":
+                        System.out.println("Button " + l_components[1] + " pressed");
+                        break;
+                }
             }
         });
 
