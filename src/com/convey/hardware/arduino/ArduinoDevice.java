@@ -255,7 +255,6 @@ public class ArduinoDevice implements SerialPortEventListener {
             }
         }
         if (l_portID == null) {
-            JOptionPane.showMessageDialog(null, "No ports avalaible");
             System.err.println(ArduinoDevice.class.getName() + " Error 4x003 :No ports avalaible");
             setConnected(false);
         } else {

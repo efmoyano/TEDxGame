@@ -8,96 +8,47 @@ package com.convey.utils;
  * @author Ernesto Moyano
  * @date 04/10/2014 11:45:12
  */
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 public class Animation {
-    
-    public Animation() {
-        EventQueue.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+
+    public static final int RUN_TIME = 500;
+    private final JPanel panel;
+    private final Rectangle from;
+    private final Rectangle to;
+
+    private long startTime;
+
+    public Animation(JPanel panel, Rectangle from, Rectangle to) {
+        this.panel = panel;
+        this.from = from;
+        this.to = to;
+    }
+
+    public void start() {
+        Timer l_timer = new Timer(40, (ActionEvent e) -> {
+            long l_duration = System.currentTimeMillis() - startTime;
+            double l_progress = (double) l_duration / (double) RUN_TIME;
+            if (l_progress > 1f) {
+                l_progress = 1f;
+                ((Timer) e.getSource()).stop();
+                panel.revalidate();
+                panel.repaint();
+
             }
-
-            JFrame frame = new JFrame("Test");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setLayout(new BorderLayout());
-            frame.add(new TestPane());
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+            Rectangle l_target = calculateProgress(from, to, l_progress);
+            panel.setBounds(l_target);
         });
-    }
-
-    public final class TestPane extends JPanel {
-
-        private final JPanel panel;
-
-        public TestPane() {
-            setLayout(null);
-            panel = new JPanel();
-            panel.setBackground(Color.RED);
-            add(panel);
-            Dimension size = getPreferredSize();
-
-            Rectangle from = new Rectangle(size.width, (size.height - 50) / 2, 50, 50);
-            Rectangle to = new Rectangle((size.width - 50) / 2, (size.height - 50) / 2, 50, 50);
-
-            Animate animate = new Animate(panel, from, to);
-            animate.start();
-
-        }
-
-        @Override
-        public Dimension getPreferredSize() {
-            return new Dimension(200, 200);
-        }
-
-    }
-
-    public static class Animate {
-
-        public static final int RUN_TIME = 2000;
-        private final JPanel panel;
-        private final Rectangle from;
-        private final Rectangle to;
-
-        private long startTime;
-
-        public Animate(JPanel panel, Rectangle from, Rectangle to) {
-            this.panel = panel;
-            this.from = from;
-            this.to = to;
-        }
-
-        public void start() {
-            Timer l_timer = new Timer(40, (ActionEvent e) -> {
-                long l_duration = System.currentTimeMillis() - startTime;
-                double l_progress = (double) l_duration / (double) RUN_TIME;
-                if (l_progress > 1f) {
-                    l_progress = 1f;
-                    ((Timer) e.getSource()).stop();
-                }
-                Rectangle l_target = calculateProgress(from, to, l_progress);
-                panel.setBounds(l_target);
-            });
-            l_timer.setRepeats(true);
-            l_timer.setCoalesce(true);
-            l_timer.setInitialDelay(0);
-            startTime = System.currentTimeMillis();
-            l_timer.start();
-        }
+        l_timer.setRepeats(true);
+        l_timer.setCoalesce(true);
+        l_timer.setInitialDelay(0);
+        startTime = System.currentTimeMillis();
+        l_timer.start();
     }
 
     public static Rectangle calculateProgress(Rectangle p_startBounds, Rectangle p_targetBounds, double p_progress) {
