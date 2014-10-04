@@ -2,6 +2,9 @@ package com.convey.GUI;
 
 import com.convey.game.GameEngine;
 import com.convey.game.Question;
+import com.convey.utils.Animation;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
@@ -15,9 +18,31 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
     private GameEngine gameEngine;
     public static final String PROP_GAMEENGINE = "gameEngine";
-
     private Question currentQuestion;
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private MainFrame mainFrame;
+    public static final String PROP_MAINFRAME = "mainFrame";
+    Dimension l_panelSize;
+
+    /**
+     * Get the value of mainFrame
+     *
+     * @return the value of mainFrame
+     */
+    public MainFrame getMainFrame() {
+        return mainFrame;
+    }
+
+    /**
+     * Set the value of mainFrame
+     *
+     * @param mainFrame new value of mainFrame
+     */
+    public void setMainFrame(MainFrame mainFrame) {
+        MainFrame oldMainFrame = this.mainFrame;
+        this.mainFrame = mainFrame;
+        propertyChangeSupport.firePropertyChange(PROP_MAINFRAME, oldMainFrame, mainFrame);
+    }
 
     /**
      * Get the value of gameEngine
@@ -65,8 +90,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
         this.loadNextQuestion();
     }
 
-    public GameMainPanel(MainFrame mainFrame) {
+    public GameMainPanel(MainFrame p_mainFrame) {
+        setMainFrame(p_mainFrame);
         initComponents();
+        l_panelSize = getMainFrame().getPreferredSize();
         this.gameEngine = new GameEngine();
         this.loadNextQuestion();
     }
@@ -81,6 +108,20 @@ public final class GameMainPanel extends javax.swing.JPanel {
         this.lblOrangeOption.setText(this.currentQuestion.getOptionOrange());
         this.lblYellowOption.setText(this.currentQuestion.getOptionYellow());
         this.lblRedOption.setText(this.currentQuestion.getOptionRed());
+
+        Rectangle l_redFrom = new Rectangle(l_panelSize.width / 4, l_panelSize.height / 2, 0, 0);
+//        Rectangle l_orangeFrom = new Rectangle(l_panelSize.height, l_panelSize.width, l_panelSize.width / 2, l_panelSize.height / 2);
+//        Rectangle l_greenFrom = new Rectangle(l_panelSize.width, l_panelSize.height, l_panelSize.width / 2, l_panelSize.height / 2);
+//        Rectangle l_yellowFrom = new Rectangle(0, l_panelSize.height, l_panelSize.width / 2, l_panelSize.height / 2);
+
+        Rectangle to = new Rectangle(0, 0, l_panelSize.width / 2, l_panelSize.height / 4);
+        //(0,0,H,W)
+
+        new Animation(redAnswer, l_redFrom, to).start();
+//        new Animation(orangeAnswer, l_orangeFrom, to).start();
+//        new Animation(greenAnswer, l_greenFrom, to).start();
+//        new Animation(yellowAnswer, l_yellowFrom, to).start();
+
     }
 
     public void checkResponse(String p_resopnse) {
@@ -144,6 +185,11 @@ public final class GameMainPanel extends javax.swing.JPanel {
         setForeground(new java.awt.Color(204, 0, 153));
         setMinimumSize(new java.awt.Dimension(640, 480));
         setPreferredSize(new java.awt.Dimension(640, 480));
+        addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                formComponentResized(evt);
+            }
+        });
         setLayout(new java.awt.BorderLayout());
 
         questionPanel.setOpaque(false);
@@ -294,6 +340,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
         add(jPanel2, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+        
+    }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel answersPanel;

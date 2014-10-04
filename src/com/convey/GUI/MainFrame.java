@@ -5,14 +5,10 @@ import com.convey.hardware.arduino.ArduinoEventListener;
 import com.convey.services.MySqlConnection;
 import com.convey.utils.ProcessPaths;
 import com.convey.utils.ProcessRunner;
-import com.convey.utils.Utils;
-import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsEnvironment;
-import java.awt.Robot;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
@@ -198,22 +194,23 @@ public class MainFrame extends javax.swing.JFrame {
             public void onMessageReceived(String p_message) {
 
                 l_components = p_message.split("x");
+
                 switch (l_components[0]) {
+                    // Information messages
                     case "0":
                         JOptionPane.showMessageDialog(null, l_components[1]);
                         break;
+
+                    // Proximity sensor messages   
                     case "1":
+
                         setProximityDistance(Integer.parseInt(l_components[1]));
-                        setColor(Utils.getRGB(0, 50, Integer.parseInt(l_components[1])));
-                        if (false) {
-                            try {
-                                Robot robot = new Robot();
-                                robot.mousePress(InputEvent.BUTTON1_MASK);
-                                robot.mouseRelease(InputEvent.BUTTON1_MASK);
-                            } catch (AWTException e) {
-                            }
+                        if (proximityDistance < 50) {
+                            event();
                         }
                         break;
+
+                    // Button messages
                     case "2":
                         gameMainPanel.buttonListener(l_components[1]);
                         break;
@@ -234,19 +231,24 @@ public class MainFrame extends javax.swing.JFrame {
         this.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseMoved(MouseEvent e) {
-                boolean hasSelectedMenu = false;
+                boolean l_hasSelectedMenu = false;
                 for (int i = 0; i < l_mainMenu.getMenuCount(); ++i) {
                     if (l_mainMenu.getMenu(i).isSelected()) {
-                        hasSelectedMenu = true;
+                        l_hasSelectedMenu = true;
                         break;
                     }
                 }
-                if (!hasSelectedMenu) {
+                if (!l_hasSelectedMenu) {
                     l_mainMenu.setVisible(e.getY() < 50);
                 }
             }
         });
+
         initComponents();
+
+//        runFullScreenMenuActionPerformed(null);
+//        runScreenSaverMenuActionPerformed(null);
+//        setExtendedState(getExtendedState());
     }
 
     @SuppressWarnings("unchecked")
@@ -256,15 +258,15 @@ public class MainFrame extends javax.swing.JFrame {
         mainPanel = new javax.swing.JPanel();
         l_mainMenu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jMenuItem4 = new javax.swing.JMenuItem();
-        jMenuItem3 = new javax.swing.JMenuItem();
+        newGameItem = new javax.swing.JMenuItem();
+        exitItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem2 = new javax.swing.JMenuItem();
+        loadQuestionsItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        arduinoSettingsItem = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
-        l_fullScreen = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        runFullScreenMenu = new javax.swing.JMenuItem();
+        runScreenSaverMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -291,67 +293,69 @@ public class MainFrame extends javax.swing.JFrame {
 
         jMenu1.setText("File");
 
-        jMenuItem4.setText("New Game");
-        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+        newGameItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        newGameItem.setText("New Game");
+        newGameItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem4ActionPerformed(evt);
+                newGameItemActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem4);
+        jMenu1.add(newGameItem);
 
-        jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem3.setText("Exit");
-        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+        exitItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
+        exitItem.setText("Exit");
+        exitItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem3ActionPerformed(evt);
+                exitItemActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem3);
+        jMenu1.add(exitItem);
 
         l_mainMenu.add(jMenu1);
 
         jMenu2.setText("Tools");
 
-        jMenuItem2.setText("Load Questions");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+        loadQuestionsItem.setText("Load Questions");
+        loadQuestionsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
+                loadQuestionsItemActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem2);
+        jMenu2.add(loadQuestionsItem);
 
         l_mainMenu.add(jMenu2);
 
         jMenu3.setText("Arduino");
 
-        jMenuItem1.setText("Settings");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        arduinoSettingsItem.setText("Settings");
+        arduinoSettingsItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                arduinoSettingsItemActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem1);
+        jMenu3.add(arduinoSettingsItem);
 
         l_mainMenu.add(jMenu3);
 
         jMenu4.setText("Window");
 
-        l_fullScreen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        l_fullScreen.setText("Full Screen");
-        l_fullScreen.addActionListener(new java.awt.event.ActionListener() {
+        runFullScreenMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        runFullScreenMenu.setText("Full Screen");
+        runFullScreenMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                l_fullScreenActionPerformed(evt);
+                runFullScreenMenuActionPerformed(evt);
             }
         });
-        jMenu4.add(l_fullScreen);
+        jMenu4.add(runFullScreenMenu);
 
-        jMenuItem6.setText("Run Screensaver");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+        runScreenSaverMenu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        runScreenSaverMenu.setText("Run Screensaver");
+        runScreenSaverMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
+                runScreenSaverMenuActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem6);
+        jMenu4.add(runScreenSaverMenu);
 
         l_mainMenu.add(jMenu4);
 
@@ -360,41 +364,41 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void arduinoSettingsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_arduinoSettingsItemActionPerformed
         try {
             ArduinoPanel arduinoPanel = new ArduinoPanel(this);
             installNewPanel(arduinoPanel);
         } catch (Exception ex) {
             error(ex);
         }
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_arduinoSettingsItemActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+    private void exitItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitItemActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jMenuItem3ActionPerformed
+    }//GEN-LAST:event_exitItemActionPerformed
 
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+    private void loadQuestionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadQuestionsItemActionPerformed
         try {
             DataBasePanel dataBasePanel = new DataBasePanel(this);
             installNewPanel(dataBasePanel);
         } catch (Exception ex) {
             error(ex);
         }
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    }//GEN-LAST:event_loadQuestionsItemActionPerformed
 
-    private void l_fullScreenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_l_fullScreenActionPerformed
+    private void runFullScreenMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runFullScreenMenuActionPerformed
         this.dispose();
         this.setUndecorated(true);
         this.setResizable(false);
         this.validate();
         GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(this);
-    }//GEN-LAST:event_l_fullScreenActionPerformed
+    }//GEN-LAST:event_runFullScreenMenuActionPerformed
 
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+    private void runScreenSaverMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runScreenSaverMenuActionPerformed
         new ProcessRunner().run(ProcessPaths.SCREENSAVER_PATH);
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
+    }//GEN-LAST:event_runScreenSaverMenuActionPerformed
 
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+    private void newGameItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameItemActionPerformed
 
         try {
             gameMainPanel = new GameMainPanel(this);
@@ -403,7 +407,7 @@ public class MainFrame extends javax.swing.JFrame {
             error(ex);
         }
 
-    }//GEN-LAST:event_jMenuItem4ActionPerformed
+    }//GEN-LAST:event_newGameItemActionPerformed
 
     public void installNewPanel(JComponent p_component) {
         Component l_last = getContentPane().getComponent(0);
@@ -418,18 +422,22 @@ public class MainFrame extends javax.swing.JFrame {
         Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
     }
 
+    public void event() {
+        super.setExtendedState(super.getExtendedState());
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem arduinoSettingsItem;
+    private javax.swing.JMenuItem exitItem;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem3;
-    private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem l_fullScreen;
     public javax.swing.JMenuBar l_mainMenu;
+    private javax.swing.JMenuItem loadQuestionsItem;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JMenuItem newGameItem;
+    private javax.swing.JMenuItem runFullScreenMenu;
+    private javax.swing.JMenuItem runScreenSaverMenu;
     // End of variables declaration//GEN-END:variables
 }
