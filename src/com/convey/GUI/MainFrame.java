@@ -45,6 +45,30 @@ public class MainFrame extends javax.swing.JFrame {
     private Color color;
     public static final String PROP_COLOR = "color";
 
+    private GameMainPanel gameMainPanel;
+
+    public static final String PROP_GAMEMAINPANEL = "gameMainPanel";
+
+    /**
+     * Get the value of gameMainPanel
+     *
+     * @return the value of gameMainPanel
+     */
+    public GameMainPanel getGameMainPanel() {
+        return gameMainPanel;
+    }
+
+    /**
+     * Set the value of gameMainPanel
+     *
+     * @param gameMainPanel new value of gameMainPanel
+     */
+    public void setGameMainPanel(GameMainPanel gameMainPanel) {
+        GameMainPanel oldGameMainPanel = this.gameMainPanel;
+        this.gameMainPanel = gameMainPanel;
+        propertyChangeSupport.firePropertyChange(PROP_GAMEMAINPANEL, oldGameMainPanel, gameMainPanel);
+    }
+
     /**
      * Get the value of color
      *
@@ -178,9 +202,17 @@ public class MainFrame extends javax.swing.JFrame {
                     case "1":
                         setProximityDistance(Integer.parseInt(l_components[1]));
                         setColor(Utils.getRGB(0, 50, Integer.parseInt(l_components[1])));
+                        if (false) {
+                            try {
+                                Robot robot = new Robot();
+                                robot.mousePress(InputEvent.BUTTON1_MASK);
+                                robot.mouseRelease(InputEvent.BUTTON1_MASK);
+                            } catch (AWTException e) {
+                            }
+                        }
                         break;
                     case "2":
-                        System.out.println("Button " + l_components[1] + " pressed");
+                        gameMainPanel.buttonListener(l_components[1]);
                         break;
                 }
             }
@@ -357,20 +389,12 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         new ProcessRunner().run(ProcessPaths.SCREENSAVER_PATH);
-
-//        try {
-//            Robot robot = new Robot();
-//            robot.mousePress(InputEvent.BUTTON1_MASK);
-//            robot.mouseRelease(InputEvent.BUTTON1_MASK);
-//        } catch (AWTException e) {
-//            e.printStackTrace();
-//        }
     }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
 
         try {
-            GameMainPanel gameMainPanel = new GameMainPanel(this);
+            gameMainPanel = new GameMainPanel(this);
             installNewPanel(gameMainPanel);
         } catch (Exception ex) {
             error(ex);

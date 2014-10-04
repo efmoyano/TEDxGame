@@ -19,26 +19,16 @@ public final class GameEngine {
 
     public void loadQuestions() {
         questions = new ArrayList<>();
-        Question q1 = new Question("Cual es la version anterior a Windows XP ?", new Option("Windows Milenium", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q2 = new Question("Cual es la version anterior a Windows Vista ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q3 = new Question("Cual es la version anterior a Windows Milenium ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q4 = new Question("Cual es la version anterior a Windows 8 ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q5 = new Question("Cual es la version anterior a Windows 9 ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q6 = new Question("Cual es la version anterior a Ubuntu 7 ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q7 = new Question("Cual es la version anterior a Debian 9 ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q8 = new Question("Cual es la version anterior a Windows 12 ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q9 = new Question("Cual es la version anterior a OSX Lion ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
-        Question q10 = new Question("Cual es la version anterior a IOS4 ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
+        Question q1 = new Question("Cuanto es 1 + 1 ?", new Option("2", true), new Option("3", false), new Option("4", false), new Option("5", false));
+        Question q2 = new Question("Cual es la raiz cuadrada de 81 ?", new Option("22", false), new Option("9", true), new Option("33", false), new Option("8", false));
+        Question q3 = new Question("Cual es el comando de linux para ser super usuario ?", new Option("sumo", false), new Option("sudo", true), new Option("suso", false), new Option("suro", false));
+        Question q4 = new Question("Por que ivan es tan pecho frio ?", new Option("por cagon", false), new Option("por boton", false), new Option("por chillon", false), new Option("todas son correctas", true));
+        Question q5 = new Question("Cual es la version anterior a Windows 8 ?", new Option("Windows 98", false), new Option("Windows Vista", false), new Option("Windows 7", true), new Option("Windows Mint", false));
         questions.add(q1);
         questions.add(q2);
         questions.add(q3);
         questions.add(q4);
         questions.add(q5);
-        questions.add(q6);
-        questions.add(q7);
-        questions.add(q8);
-        questions.add(q9);
-        questions.add(q10);
     }
 
     public Question getNextQuestion() {

@@ -36,7 +36,7 @@ public class Question {
         return this.options.get(1).text;
     }
 
-    public String getOptionBlue() {
+    public String getOptionOrange() {
         return this.options.get(2).text;
     }
 
