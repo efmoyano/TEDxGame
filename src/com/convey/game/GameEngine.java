@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.convey.game;
 
 import java.util.ArrayList;
@@ -13,15 +7,18 @@ import java.util.Random;
  *
  * @author jgonzalez
  */
-public class GameEngine {
+public final class GameEngine {
+
     int MAX_QUESTIONS = 9;
     ArrayList<Question> questions;
     ArrayList<Question> alreadyUsedQuestions;
-    public GameEngine(){
+
+    public GameEngine() {
         loadQuestions();
     }
-    public void loadQuestions(){
-        questions = new ArrayList<Question>();
+
+    public void loadQuestions() {
+        questions = new ArrayList<>();
         Question q1 = new Question("Cual es la version anterior a Windows XP ?", new Option("Windows Milenium", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
         Question q2 = new Question("Cual es la version anterior a Windows Vista ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
         Question q3 = new Question("Cual es la version anterior a Windows Milenium ?", new Option("Windows 98", true), new Option("Windows Vista", false), new Option("Ubuntu", false), new Option("Windows Mint", false));
@@ -43,14 +40,12 @@ public class GameEngine {
         questions.add(q9);
         questions.add(q10);
     }
-    
-    public Question getNextQuestion(){
+
+    public Question getNextQuestion() {
         return this.questions.get(this.getRandomQuestionIndex());
     }
-    
+
     public int getRandomQuestionIndex() {
-        Random rand = new Random();
-        int randomNum = rand.nextInt(questions.size());
-        return randomNum;
+        return new Random().nextInt(questions.size());
     }
 }
