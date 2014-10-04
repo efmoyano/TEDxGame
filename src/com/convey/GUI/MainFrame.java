@@ -221,6 +221,7 @@ public class MainFrame extends javax.swing.JFrame {
         mainPanel = new javax.swing.JPanel();
         l_mainMenu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -254,6 +255,14 @@ public class MainFrame extends javax.swing.JFrame {
         l_mainMenu.setOpaque(false);
 
         jMenu1.setText("File");
+
+        jMenuItem4.setText("New Game");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem4);
 
         jMenuItem3.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Q, java.awt.event.InputEvent.CTRL_MASK));
         jMenuItem3.setText("Exit");
@@ -348,19 +357,26 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
         new ProcessRunner().run(ProcessPaths.SCREENSAVER_PATH);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            Robot robot = new Robot();
-            robot.mousePress(InputEvent.BUTTON1_MASK);
-            robot.mouseRelease(InputEvent.BUTTON1_MASK);
-        } catch (AWTException e) {
-            e.printStackTrace();
-        }
+
+//        try {
+//            Robot robot = new Robot();
+//            robot.mousePress(InputEvent.BUTTON1_MASK);
+//            robot.mouseRelease(InputEvent.BUTTON1_MASK);
+//        } catch (AWTException e) {
+//            e.printStackTrace();
+//        }
     }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+
+        try {
+            GameMainPanel gameMainPanel = new GameMainPanel(this);
+            installNewPanel(gameMainPanel);
+        } catch (Exception ex) {
+            error(ex);
+        }
+
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     public void installNewPanel(JComponent p_component) {
         Component l_last = getContentPane().getComponent(0);
@@ -383,6 +399,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem l_fullScreen;
     public javax.swing.JMenuBar l_mainMenu;
