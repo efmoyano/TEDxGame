@@ -172,6 +172,9 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
 
         arduinoDevice = new ArduinoDevice();
+        if (!arduinoDevice.isConnected()) {
+            arduinoDevice.initialize();
+        }
 
         mySqlConnection = new MySqlConnection();
 
