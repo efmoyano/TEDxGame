@@ -83,7 +83,6 @@ public class PropertiesHandler extends Properties {
     public void loadProperties() {
         this.loadPropertiesFromFile(new File(fileName + ".properties"));
         if (this.isEmpty()) {
-            System.out.println("Properties not loaded yet, loading defaults");
             this.loadDefaultProperties();
         }
     }
