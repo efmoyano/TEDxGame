@@ -1,6 +1,14 @@
 package com.convey.utils;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * @projectName TEDxGame
@@ -33,5 +41,32 @@ public class Utils {
             }
         }
         return new Color(l_red, l_green, l_blue);
+    }
+
+    public static BufferedImage resizeImage(BufferedImage p_image, int p_width, int p_height) {
+        if (p_image != null && p_width >= 0 && p_height >= 0) {
+            int type;
+
+            type = p_image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : p_image.getType();
+            BufferedImage resizedImage = new BufferedImage(p_width, p_height, type);
+            Graphics2D g = resizedImage.createGraphics();
+            g.drawImage(p_image, 0, 0, p_width, p_height, null);
+            g.dispose();
+            return resizedImage;
+        } else {
+            return p_image;
+        }
+
+    }
+
+    public void playSound() {
+        try {
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream("/res/sounds/pup.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException ex) {
+            ex.printStackTrace();
+        }
     }
 }

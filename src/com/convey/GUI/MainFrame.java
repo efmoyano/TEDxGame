@@ -256,6 +256,7 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
+        customPanel1 = new com.convey.component.CustomPanel();
         l_mainMenu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newGameItem = new javax.swing.JMenuItem();
@@ -269,19 +270,15 @@ public class MainFrame extends javax.swing.JFrame {
         runScreenSaverMenu = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(640, 480));
 
         mainPanel.setBackground(new java.awt.Color(204, 204, 255));
+        mainPanel.setMinimumSize(new java.awt.Dimension(640, 480));
+        mainPanel.setPreferredSize(new java.awt.Dimension(640, 480));
+        mainPanel.setLayout(new java.awt.BorderLayout());
 
-        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
-        mainPanel.setLayout(mainPanelLayout);
-        mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 738, Short.MAX_VALUE)
-        );
-        mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 498, Short.MAX_VALUE)
-        );
+        customPanel1.setImageBackground("wallpaper.png");
+        mainPanel.add(customPanel1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 
@@ -428,6 +425,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem arduinoSettingsItem;
+    private com.convey.component.CustomPanel customPanel1;
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;

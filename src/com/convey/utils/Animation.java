@@ -17,7 +17,7 @@ import javax.swing.Timer;
 
 public class Animation {
 
-    public static final int RUN_TIME = 500;
+    public static final int RUN_TIME = 250;
     private final JPanel panel;
     private final Rectangle from;
     private final Rectangle to;
@@ -39,7 +39,7 @@ public class Animation {
                 ((Timer) e.getSource()).stop();
                 panel.revalidate();
                 panel.repaint();
-
+                new Utils().playSound();
             }
             Rectangle l_target = calculateProgress(from, to, l_progress);
             panel.setBounds(l_target);
@@ -49,6 +49,7 @@ public class Animation {
         l_timer.setInitialDelay(0);
         startTime = System.currentTimeMillis();
         l_timer.start();
+
     }
 
     public static Rectangle calculateProgress(Rectangle p_startBounds, Rectangle p_targetBounds, double p_progress) {
