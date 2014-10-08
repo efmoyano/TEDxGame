@@ -239,18 +239,19 @@ public class MySqlConnection {
         }
     }
 
-    public void addPeople(String firstName, String lastName, String telephone, String email, String ivaDetail, String type) {
+    public void insertQuestion(String p_question, String p_answer1, String p_answer2, String p_answer3, String p_answer4, int p_difficulty, int p_correct) {
         try {
-            CallableStatement callableStatement = conection.prepareCall("{ call AddPeople(?,?,?,?,?,?) }");
-            callableStatement.setString(1, firstName);
-            callableStatement.setString(2, lastName);
-            callableStatement.setString(3, telephone);
-            callableStatement.setString(4, email);
-            callableStatement.setString(5, ivaDetail);
-            callableStatement.setString(6, type);
+            CallableStatement callableStatement = conection.prepareCall("{ call insertQuestion(?,?,?,?,?,?,?) }");
+            callableStatement.setString(1, p_question);
+            callableStatement.setString(2, p_answer1);
+            callableStatement.setString(3, p_answer2);
+            callableStatement.setString(4, p_answer3);
+            callableStatement.setString(5, p_answer4);
+            callableStatement.setInt(6, p_difficulty);
+            callableStatement.setInt(7, p_correct);
             callableStatement.executeQuery();
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Error al cargar \n Revise los datos");
+            JOptionPane.showMessageDialog(null, "Error loading data");
             Logger.getLogger(MySqlConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

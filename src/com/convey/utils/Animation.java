@@ -17,11 +17,10 @@ import javax.swing.Timer;
 
 public class Animation {
 
-    public static final int RUN_TIME = 250;
+    public static final int RUN_TIME = 150;
     private final JPanel panel;
     private final Rectangle from;
     private final Rectangle to;
-
     private long startTime;
 
     public Animation(JPanel panel, Rectangle from, Rectangle to) {
@@ -32,13 +31,12 @@ public class Animation {
 
     public void start() {
         Timer l_timer = new Timer(40, (ActionEvent e) -> {
+            this.panel.setVisible(true);
             long l_duration = System.currentTimeMillis() - startTime;
             double l_progress = (double) l_duration / (double) RUN_TIME;
             if (l_progress > 1f) {
                 l_progress = 1f;
                 ((Timer) e.getSource()).stop();
-                panel.revalidate();
-                panel.repaint();
                 new Utils().playSound();
             }
             Rectangle l_target = calculateProgress(from, to, l_progress);
@@ -49,7 +47,6 @@ public class Animation {
         l_timer.setInitialDelay(0);
         startTime = System.currentTimeMillis();
         l_timer.start();
-
     }
 
     public static Rectangle calculateProgress(Rectangle p_startBounds, Rectangle p_targetBounds, double p_progress) {

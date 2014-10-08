@@ -3,7 +3,6 @@ package com.convey;
 import com.convey.GUI.MainFrame;
 import com.convey.utils.ProcessPaths;
 import com.convey.utils.ProcessRunner;
-import java.awt.GraphicsEnvironment;
 
 /**
  * @projectName TEDxGame

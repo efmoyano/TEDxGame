@@ -145,11 +145,12 @@ public final class GameMainPanel extends javax.swing.JPanel {
         l_panelSize = getMainFrame().getPreferredSize();
         this.gameEngine = new GameEngine();
         this.loadNextQuestion();
+
     }
 
     public void loadNextQuestion() {
 
-        hideAnswers(false, false, false, false);
+        hideAnswers(false);
 
         this.lblMensajeRespuesta.setText("");
         this.currentQuestion = this.gameEngine.getNextQuestion();
@@ -161,35 +162,29 @@ public final class GameMainPanel extends javax.swing.JPanel {
         this.lblYellowOption.setText(this.currentQuestion.getOptionYellow());
         this.lblRedOption.setText(this.currentQuestion.getOptionRed());
 
-        Rectangle l_redFrom = new Rectangle(l_panelSize.width / 4, l_panelSize.height / 2, 0, 0);
+        Rectangle l_redFrom = new Rectangle(redAnswer.getBounds().x, redAnswer.getBounds().y, 0, 0);
 
-        Rectangle l_orangeFrom = new Rectangle(l_panelSize.width / 4, l_panelSize.height / 2, 0, 0);
+        Rectangle l_orangeFrom = new Rectangle(orangeAnswer.getBounds().x, orangeAnswer.getBounds().y, 0, 0);
 
-        Rectangle l_greenFrom = new Rectangle(l_panelSize.width / 2, l_panelSize.height, 0, 0);
+        Rectangle l_greenFrom = new Rectangle(greenAnswer.getBounds().x, greenAnswer.getBounds().y, 0, 0);
 
-        Rectangle l_yellowFrom = new Rectangle(l_panelSize.width / 2, l_panelSize.height, 0, 0);
-
-        Rectangle to = new Rectangle(0, 0, l_panelSize.width / 2, l_panelSize.height / 4);
+        Rectangle l_yellowFrom = new Rectangle(yellowAnswer.getBounds().x, yellowAnswer.getBounds().y, 0, 0);
 
         new Thread(() -> {
             try {
-                hideAnswers(true, false, false, false);
-                new Animation(redAnswer, l_redFrom, to).start();
 
-                Thread.sleep(250);
+                new Animation(redAnswer, l_redFrom, redAnswer.getBounds()).start();
+                Thread.sleep(150);
 
-                hideAnswers(true, true, false, false);
-                new Animation(orangeAnswer, l_orangeFrom, to).start();
+                new Animation(orangeAnswer, l_orangeFrom, orangeAnswer.getBounds()).start();
+                Thread.sleep(150);
 
-                Thread.sleep(250);
+                new Animation(yellowAnswer, l_yellowFrom, yellowAnswer.getBounds()).start();
+                Thread.sleep(150);
 
-                hideAnswers(true, true, true, false);
-                new Animation(yellowAnswer, l_yellowFrom, to).start();
+                new Animation(greenAnswer, l_greenFrom, greenAnswer.getBounds()).start();
+                Thread.sleep(150);
 
-                Thread.sleep(250);
-
-                hideAnswers(true, true, true, true);
-                new Animation(greenAnswer, l_greenFrom, to).start();
             } catch (InterruptedException ex) {
                 Logger.getLogger(GameMainPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -201,6 +196,13 @@ public final class GameMainPanel extends javax.swing.JPanel {
         orangeAnswer.setVisible(p_flag2);
         yellowAnswer.setVisible(p_flag3);
         greenAnswer.setVisible(p_flag4);
+    }
+
+    public void hideAnswers(boolean p_flag) {
+        redAnswer.setVisible(p_flag);
+        orangeAnswer.setVisible(p_flag);
+        yellowAnswer.setVisible(p_flag);
+        greenAnswer.setVisible(p_flag);
     }
 
     public void checkResponse(String p_resopnse) {
@@ -221,7 +223,6 @@ public final class GameMainPanel extends javax.swing.JPanel {
             } catch (InterruptedException ex) {
                 Logger.getLogger(GameMainPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
-            hideAnswers(false, false, false, false);
             setAnswerResult(Color.WHITE);
             setAnswerBorder(null);
             loadNextQuestion();
@@ -295,7 +296,6 @@ public final class GameMainPanel extends javax.swing.JPanel {
         questionPanel.setLayout(questionPanelLayout);
 
         lblQuestion.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
-        lblQuestion.setForeground(new java.awt.Color(255, 255, 255));
         lblQuestion.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblQuestion.setText("Como se llama la version anterior a windows XP ?");
 
@@ -315,6 +315,11 @@ public final class GameMainPanel extends javax.swing.JPanel {
         answersPanel.setLayout(new java.awt.GridLayout(2, 2, 30, 30));
 
         redAnswer.setBackground(new java.awt.Color(255, 0, 51));
+        redAnswer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                redAnswerMousePressed(evt);
+            }
+        });
         redAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblRedOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -329,6 +334,11 @@ public final class GameMainPanel extends javax.swing.JPanel {
         answersPanel.add(redAnswer);
 
         orangeAnswer.setBackground(new java.awt.Color(255, 102, 0));
+        orangeAnswer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                orangeAnswerMousePressed(evt);
+            }
+        });
         orangeAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblOrangeOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -343,6 +353,11 @@ public final class GameMainPanel extends javax.swing.JPanel {
         answersPanel.add(orangeAnswer);
 
         yellowAnswer.setBackground(new java.awt.Color(255, 255, 51));
+        yellowAnswer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                yellowAnswerMousePressed(evt);
+            }
+        });
         yellowAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblYellowOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -357,6 +372,11 @@ public final class GameMainPanel extends javax.swing.JPanel {
         answersPanel.add(yellowAnswer);
 
         greenAnswer.setBackground(new java.awt.Color(0, 153, 102));
+        greenAnswer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                greenAnswerMousePressed(evt);
+            }
+        });
         greenAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblGreenOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
@@ -450,8 +470,24 @@ public final class GameMainPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-
+        l_panelSize = getMainFrame().getPreferredSize();
     }//GEN-LAST:event_formComponentResized
+
+    private void redAnswerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_redAnswerMousePressed
+        buttonListener("1");
+    }//GEN-LAST:event_redAnswerMousePressed
+
+    private void orangeAnswerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_orangeAnswerMousePressed
+        buttonListener("2");
+    }//GEN-LAST:event_orangeAnswerMousePressed
+
+    private void yellowAnswerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_yellowAnswerMousePressed
+        buttonListener("4");
+    }//GEN-LAST:event_yellowAnswerMousePressed
+
+    private void greenAnswerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_greenAnswerMousePressed
+        buttonListener("3");
+    }//GEN-LAST:event_greenAnswerMousePressed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel answersPanel;

@@ -8,11 +8,11 @@ import java.util.ArrayList;
  */
 public class Question {
 
-    private final String text;
+    private final String textQuestion;
     private final ArrayList<Option> options;
 
     public Question(String text, Option a, Option b, Option c, Option d) {
-        this.text = text;
+        this.textQuestion = text;
         this.options = new ArrayList<>();
         this.options.add(a);
         this.options.add(b);
@@ -25,7 +25,7 @@ public class Question {
     }
 
     public String getQuestionText() {
-        return this.text;
+        return this.textQuestion;
     }
 
     public String getOptionRed() {

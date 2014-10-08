@@ -5,6 +5,7 @@ import com.convey.hardware.arduino.ArduinoEventListener;
 import com.convey.services.MySqlConnection;
 import com.convey.utils.ProcessPaths;
 import com.convey.utils.ProcessRunner;
+import com.convey.utils.XLSProcessor;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsEnvironment;
@@ -13,11 +14,13 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
@@ -173,6 +176,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
 
         mySqlConnection = new MySqlConnection();
+        mySqlConnection.connect();
 
         arduinoDevice.addArduinoEventListener(new ArduinoEventListener() {
             private String[] l_components;
@@ -263,6 +267,7 @@ public class MainFrame extends javax.swing.JFrame {
         exitItem = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         loadQuestionsItem = new javax.swing.JMenuItem();
+        dbConfigItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         arduinoSettingsItem = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
@@ -320,6 +325,14 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jMenu2.add(loadQuestionsItem);
 
+        dbConfigItem.setText("DB Config");
+        dbConfigItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dbConfigItemActionPerformed(evt);
+            }
+        });
+        jMenu2.add(dbConfigItem);
+
         l_mainMenu.add(jMenu2);
 
         jMenu3.setText("Arduino");
@@ -374,14 +387,15 @@ public class MainFrame extends javax.swing.JFrame {
         System.exit(0);
     }//GEN-LAST:event_exitItemActionPerformed
 
-    private void loadQuestionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadQuestionsItemActionPerformed
+    private void dbConfigItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dbConfigItemActionPerformed
         try {
             DataBasePanel dataBasePanel = new DataBasePanel(this);
             installNewPanel(dataBasePanel);
+
         } catch (Exception ex) {
             error(ex);
         }
-    }//GEN-LAST:event_loadQuestionsItemActionPerformed
+    }//GEN-LAST:event_dbConfigItemActionPerformed
 
     private void runFullScreenMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runFullScreenMenuActionPerformed
         this.dispose();
@@ -396,15 +410,26 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_runScreenSaverMenuActionPerformed
 
     private void newGameItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameItemActionPerformed
-
         try {
             gameMainPanel = new GameMainPanel(this);
             installNewPanel(gameMainPanel);
         } catch (Exception ex) {
             error(ex);
         }
-
     }//GEN-LAST:event_newGameItemActionPerformed
+
+    private void loadQuestionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadQuestionsItemActionPerformed
+        XLSProcessor xlsProcessor = new XLSProcessor();
+        JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(fc);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+            File file = fc.getSelectedFile();
+            xlsProcessor.setPath(file.getAbsolutePath());
+            xlsProcessor.setMySqlConnection(mySqlConnection);
+            xlsProcessor.setSheetIndex(0);
+            xlsProcessor.read();
+        }
+    }//GEN-LAST:event_loadQuestionsItemActionPerformed
 
     public void installNewPanel(JComponent p_component) {
         Component l_last = getContentPane().getComponent(0);
@@ -426,6 +451,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem arduinoSettingsItem;
     private com.convey.component.CustomPanel customPanel1;
+    private javax.swing.JMenuItem dbConfigItem;
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
