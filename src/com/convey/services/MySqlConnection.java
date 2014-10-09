@@ -239,6 +239,17 @@ public class MySqlConnection {
         }
     }
 
+    public ResultSet getQuestion() {
+        try {
+            CallableStatement callableStatement = conection.prepareCall("{ call getQuestion() }");
+            return callableStatement.executeQuery();
+        } catch (SQLException ex) {
+            Logger.getLogger(MySqlConnection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
     public void insertQuestion(String p_question, String p_answer1, String p_answer2, String p_answer3, String p_answer4, int p_difficulty, int p_correct) {
         try {
             CallableStatement callableStatement = conection.prepareCall("{ call insertQuestion(?,?,?,?,?,?,?) }");

@@ -4,7 +4,6 @@ import com.convey.game.GameEngine;
 import com.convey.game.Question;
 import com.convey.utils.Animation;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
@@ -24,7 +23,6 @@ public final class GameMainPanel extends javax.swing.JPanel {
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private MainFrame mainFrame;
     public static final String PROP_MAINFRAME = "mainFrame";
-    private Dimension l_panelSize;
 
     private Color answerResult = Color.WHITE;
     public static final String PROP_ANSWERRESULT = "answerResult";
@@ -135,17 +133,15 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
     public GameMainPanel() {
         initComponents();
-        this.gameEngine = new GameEngine();
+        this.gameEngine = new GameEngine(getMainFrame().getMySqlConnection());
         this.loadNextQuestion();
     }
 
     public GameMainPanel(MainFrame p_mainFrame) {
         setMainFrame(p_mainFrame);
+        this.gameEngine = new GameEngine(getMainFrame().getMySqlConnection());
         initComponents();
-        l_panelSize = getMainFrame().getPreferredSize();
-        this.gameEngine = new GameEngine();
         this.loadNextQuestion();
-
     }
 
     public void loadNextQuestion() {
@@ -279,11 +275,6 @@ public final class GameMainPanel extends javax.swing.JPanel {
         org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${answerBorder}"), this, org.jdesktop.beansbinding.BeanProperty.create("border"));
         bindingGroup.addBinding(binding);
 
-        addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentResized(java.awt.event.ComponentEvent evt) {
-                formComponentResized(evt);
-            }
-        });
         setLayout(new java.awt.BorderLayout());
 
         customPanel1.setImageBackground("wallpaper.png");
@@ -468,10 +459,6 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
         bindingGroup.bind();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        l_panelSize = getMainFrame().getPreferredSize();
-    }//GEN-LAST:event_formComponentResized
 
     private void redAnswerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_redAnswerMousePressed
         buttonListener("1");
