@@ -1,11 +1,12 @@
 package com.convey.utils;
 
+import com.convey.services.MySqlConnection;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.LinkedList;
+import javax.swing.JOptionPane;
 import jxl.*;
 import jxl.read.biff.BiffException;
 
@@ -20,10 +21,31 @@ import jxl.read.biff.BiffException;
 public class XLSProcessor {
 
     private String f_path;
-
     private int f_sheetIndex;
-
     public static final String PROP_SHEETINDEX = "sheetIndex";
+    private MySqlConnection mySqlConnection;
+    public static final String PROP_MYSQLCONNECTION = "mySqlConnection";
+    public static final String PROP_PATH = "path";
+
+    /**
+     * Get the value of mySqlConnection
+     *
+     * @return the value of mySqlConnection
+     */
+    public MySqlConnection getMySqlConnection() {
+        return mySqlConnection;
+    }
+
+    /**
+     * Set the value of mySqlConnection
+     *
+     * @param mySqlConnection new value of mySqlConnection
+     */
+    public void setMySqlConnection(MySqlConnection mySqlConnection) {
+        MySqlConnection oldMySqlConnection = this.mySqlConnection;
+        this.mySqlConnection = mySqlConnection;
+        propertyChangeSupport.firePropertyChange(PROP_MYSQLCONNECTION, oldMySqlConnection, mySqlConnection);
+    }
 
     /**
      * Get the value of f_sheetIndex
@@ -44,8 +66,6 @@ public class XLSProcessor {
         this.f_sheetIndex = sheetIndex;
         propertyChangeSupport.firePropertyChange(PROP_SHEETINDEX, oldSheetIndex, sheetIndex);
     }
-
-    public static final String PROP_PATH = "path";
 
     /**
      * Get the value of f_path
@@ -87,29 +107,47 @@ public class XLSProcessor {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
-    public void test() {
-        File l_fileSheet = new File(f_path);;
-        Workbook l_workbook = null;
-        Sheet l_sheet;
-        try {
-            l_workbook = Workbook.getWorkbook(l_fileSheet);
-        } catch (IOException | BiffException ex) {
-            System.out.println("Error loading file");
-            Logger.getLogger(XLSProcessor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (l_workbook != null) {
-            l_sheet = l_workbook.getSheet(f_sheetIndex);
-            Cell a1 = l_sheet.getCell(0, 0);
-            Cell b2 = l_sheet.getCell(0, 1);
-            Cell c2 = l_sheet.getCell(0, 2);
+    public void read() {
+        int l_count = 0;
+        if (f_path != null) {
+            LinkedList<Object> l_question = new LinkedList<>();
 
-            String stringa1 = a1.getContents();
-            String stringb2 = b2.getContents();
-            String stringc2 = c2.getContents();
+            Workbook l_workbook = null;
+            Sheet l_sheet;
+            try {
+                l_workbook = Workbook.getWorkbook(new File(f_path));
+            } catch (IOException | BiffException ex) {
+                JOptionPane.showMessageDialog(null, "Not supported file");
+            }
 
-            System.out.println(stringa1);
-            System.out.println(stringb2);
-            System.out.println(stringc2);
+            if (l_workbook != null) {
+                l_sheet = l_workbook.getSheet(f_sheetIndex);
+
+                for (int i = 1; i < l_sheet.getRows() - 1; i++) {
+
+                    for (int j = 0; j < 7; j++) {
+                        Cell l_cell = l_sheet.getCell(j, i);
+                        if (j == 6) {
+                            l_question.add(Utils.fromStringtoValue(l_cell.getContents()));
+                        } else {
+                            l_question.add(l_cell.getContents());
+                        }
+                    }
+                    mySqlConnection.insertQuestion(
+                            l_question.get(0).toString(),
+                            l_question.get(1).toString(),
+                            l_question.get(2).toString(),
+                            l_question.get(3).toString(),
+                            l_question.get(4).toString(),
+                            Integer.parseInt(l_question.get(5).toString()),
+                            Integer.parseInt(l_question.get(6).toString()));
+                    l_question.removeAll(l_question);
+                    l_count++;
+                }
+                JOptionPane.showMessageDialog(null, "Inserted " + l_count + " rows");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "No file selected");
         }
     }
 }

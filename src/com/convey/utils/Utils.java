@@ -59,6 +59,22 @@ public class Utils {
 
     }
 
+    public static int fromStringtoValue(String p_string) {
+
+        switch (p_string) {
+            case "A":
+                return 1;
+            case "B":
+                return 2;
+            case "C":
+                return 3;
+            case "D":
+                return 4;
+            default:
+                return 0;
+        }
+    }
+
     public void playSound() {
         try {
             AudioInputStream audioIn = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream("/res/sounds/pup.wav"));
