@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.TooManyListenersException;
-import javax.swing.JOptionPane;
 
 /**
  * @projectName TEDxGame

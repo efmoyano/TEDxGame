@@ -18,6 +18,12 @@ public class Main {
         if (!new ProcessRunner().getProcState(ProcessPaths.WAMP_PROCESS_ID)) {
             new ProcessRunner().run(ProcessPaths.WAMP_PATH);
         }
+        try {
+            System.load(Main.class.getResource("/lib/opencv/x64/opencv_java249.dll").getPath());
+        } catch (UnsatisfiedLinkError e) {
+            System.err.println("Native code library failed to load.\n" + e);
+            System.exit(1);
+        }
     }
 
     public static void main(String args[]) {
