@@ -8,40 +8,42 @@ import java.util.ArrayList;
  */
 public class Question {
 
-    private final String textQuestion;
-    private final ArrayList<Option> options;
+    private String textQuestion;
+    private ArrayList<Option> f_options;
+    private int f_dificulty;
 
-    public Question(String text, Option a, Option b, Option c, Option d) {
-        this.textQuestion = text;
-        this.options = new ArrayList<>();
-        this.options.add(a);
-        this.options.add(b);
-        this.options.add(c);
-        this.options.add(d);
+    public Question(String p_questionText, Option p_option1, Option p_option2, Option p_option3, Option p_option4, int p_difficulty) {
+        textQuestion = p_questionText;
+        f_options = new ArrayList<>();
+        f_options.add(p_option1);
+        f_options.add(p_option2);
+        f_options.add(p_option3);
+        f_options.add(p_option4);
+        f_dificulty = p_difficulty;
     }
 
     public boolean evalResponse(String response) {
-        return this.options.stream().anyMatch((actual) -> (actual.text.trim().equalsIgnoreCase(response.trim()) && actual.isAnswer == true));
+        return this.f_options.stream().anyMatch((actual) -> (actual.text.trim().equalsIgnoreCase(response.trim()) && actual.isAnswer == true));
     }
 
     public String getQuestionText() {
-        return this.textQuestion;
+        return textQuestion;
     }
 
     public String getOptionRed() {
-        return this.options.get(0).text;
+        return f_options.get(0).text;
     }
 
     public String getOptionYellow() {
-        return this.options.get(1).text;
+        return f_options.get(1).text;
     }
 
     public String getOptionOrange() {
-        return this.options.get(2).text;
+        return f_options.get(2).text;
     }
 
     public String getOptionGreen() {
-        return this.options.get(3).text;
+        return this.f_options.get(3).text;
     }
 
 }
