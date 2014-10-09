@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
@@ -38,89 +37,6 @@ public final class VideoDevice {
             "640x480",
             "320x240");
 
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
-
-//    static {
-//        try {
-//
-//            // Determina la versión de librería correspondiente al SO
-//            String OS = System.getProperty("os.name");
-//            boolean is64bits = System.getProperty("os.arch").contains("64");
-//
-//            String resName = null;
-//
-//            switch (OS.toLowerCase().split(" ")[0]) {
-//
-//                case "windows":
-//                    if (is64bits) {
-//                        resName = "res/opencv/windows/x64/opencv_java248.dll";
-//
-//                    } else {
-//                        resName = "res/opencv/windows/x86/opencv_java248.dll";
-//                    }
-//                    break;
-//
-//                case "linux":
-//                    if (is64bits) {
-//                        resName = "res/opencv/linux/x64/opencv_java248.so";
-//                    } else {
-//                        resName = "res/opencv/linux/x86/opencv_java248.so";
-//                    }
-//                    break;
-//                default: {
-//                    throw new Exception("Unsupported plattaform: " + OS.toLowerCase());
-//                }
-//            }
-//
-//            byte[] l_buffer = null;
-//
-//            try {
-//                // Extrae del .JAR, la librería y la copia en un archivo temporal
-//                InputStream l_is = "".getClass().getResourceAsStream(resName);
-//                l_buffer = new byte[l_is.available()];
-//                l_is.read(l_buffer);
-//                l_is.close();
-//            } catch (Exception l_ex2) {
-//                // Fallo la lectura directa. Intenta con un .JAR conocido
-//
-//                File l_file = new File("lib/ar.unsta.robotteam.jar");
-//                if (!l_file.exists()) {
-//                    l_file = new File("dist/lib/ar.unsta.robotteam.jar");
-//                } // end if
-//                FileInputStream l_fis = new FileInputStream(l_file);
-//                ZipInputStream l_zis = new ZipInputStream(l_fis);
-//                ZipEntry l_zipEntry;
-//                while ((l_zipEntry = l_zis.getNextEntry()) != null) {
-//                    if (l_zipEntry.getName().equals(resName)) {
-//
-//                        l_buffer = new byte[(int) l_zipEntry.getSize()];
-//                        for (int i = 0; i < l_buffer.length; i++) {
-//                            l_buffer[i] = (byte) l_zis.read();
-//                        } // end for
-//
-//                        break;
-//
-//                    } // end if
-//                } // end while
-//
-//            }
-//
-//            File l_libFile = File.createTempFile("opencv_", ".tmp");
-//            FileOutputStream l_os = new FileOutputStream(l_libFile);
-//            l_os.write(l_buffer);
-//            l_os.close();
-//
-//            // Carga dinámicamente la librería
-//            System.load(l_libFile.toString());
-//        } catch (Exception ex) {
-//
-//            System.out.println(ex.getMessage());
-//            ex.printStackTrace();
-//        }
-//
-//    }
     /**
      *
      * @return true the Video Device is running
@@ -353,17 +269,6 @@ public final class VideoDevice {
     public void changeFocus(double p_focus) {
 
         capture.set(Highgui.CV_CAP_PROP_FOCUS, p_focus);
-    }
-
-    /**
-     * Sets the frames per second
-     */
-    public void setFramesPerSecond() {
-        // En la version 2.4.8 de opencv
-        // olvidaron incluir la constante
-        // CV_CAP_PROP_FPS por lo tanto este método estará disponible
-        // cuando arreglen este error
-        // capture.set(Highgui.CV_CAP_PROP_FPS, m_index);
     }
 
     /**

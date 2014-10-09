@@ -87,7 +87,9 @@ public final class GameEngine {
     }
 
     public int getRandomQuestionIndex() {
-
-        return new Random().nextInt(questions.size());
+        if (questions.size() > 0) {
+            return new Random().nextInt(questions.size());
+        }
+        return 0;
     }
 }

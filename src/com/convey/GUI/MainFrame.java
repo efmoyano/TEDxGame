@@ -2,6 +2,7 @@ package com.convey.GUI;
 
 import com.convey.hardware.arduino.ArduinoDevice;
 import com.convey.hardware.arduino.ArduinoEventListener;
+import com.convey.hardware.video.VideoDevice;
 import com.convey.services.MySqlConnection;
 import com.convey.utils.ProcessPaths;
 import com.convey.utils.ProcessRunner;
@@ -12,6 +13,8 @@ import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
@@ -43,10 +46,30 @@ public class MainFrame extends javax.swing.JFrame {
     public static final String PROP_PROXIMITYDISTANCE = "proximityDistance";
     private Color color;
     public static final String PROP_COLOR = "color";
-
     private GameMainPanel gameMainPanel;
-
     public static final String PROP_GAMEMAINPANEL = "gameMainPanel";
+    private VideoDevice videoDevice;
+    public static final String PROP_VIDEODEVICE = "videoDevice";
+
+    /**
+     * Get the value of videoDevice
+     *
+     * @return the value of videoDevice
+     */
+    public VideoDevice getVideoDevice() {
+        return videoDevice;
+    }
+
+    /**
+     * Set the value of videoDevice
+     *
+     * @param videoDevice new value of videoDevice
+     */
+    public void setVideoDevice(VideoDevice videoDevice) {
+        VideoDevice oldVideoDevice = this.videoDevice;
+        this.videoDevice = videoDevice;
+        propertyChangeSupport.firePropertyChange(PROP_VIDEODEVICE, oldVideoDevice, videoDevice);
+    }
 
     /**
      * Get the value of gameMainPanel
@@ -175,6 +198,19 @@ public class MainFrame extends javax.swing.JFrame {
             arduinoDevice.initialize();
         }
 
+        videoDevice = new VideoDevice();
+
+        this.addWindowListener(
+                new WindowAdapter() {
+
+                    @Override
+                    public void windowClosing(WindowEvent e) {
+                        if (videoDevice != null) {
+                            videoDevice.stop();
+                        }
+                    }
+                });
+
         mySqlConnection = new MySqlConnection();
         mySqlConnection.connect();
 
@@ -268,6 +304,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         loadQuestionsItem = new javax.swing.JMenuItem();
         dbConfigItem = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         arduinoSettingsItem = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
@@ -332,6 +369,14 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
         jMenu2.add(dbConfigItem);
+
+        jMenuItem1.setText("Webcam");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
 
         l_mainMenu.add(jMenu2);
 
@@ -431,6 +476,16 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loadQuestionsItemActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        try {
+            VideoPanel videoPanel = new VideoPanel(this);
+            installNewPanel(videoPanel);
+
+        } catch (Exception ex) {
+            error(ex);
+        }
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     public void installNewPanel(JComponent p_component) {
         Component l_last = getContentPane().getComponent(0);
         if (l_last != null) {
@@ -457,6 +512,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenuItem jMenuItem1;
     public javax.swing.JMenuBar l_mainMenu;
     private javax.swing.JMenuItem loadQuestionsItem;
     private javax.swing.JPanel mainPanel;
