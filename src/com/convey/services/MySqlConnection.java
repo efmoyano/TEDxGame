@@ -23,8 +23,8 @@ import javax.swing.JOptionPane;
  * @author Ernesto Moyano
  * @date 07/09/2014 16:19:04
  */
-public class MySqlConnection {
-
+public final class MySqlConnection {
+    
     private Connection conection;
     private Statement statement;
     private String password;
@@ -38,6 +38,28 @@ public class MySqlConnection {
     private PropertiesHandler l_mysqlPropertiesHandler;
     public static final String PROP_MYSQLPROPERTIESHANDLER = "MysqlPropertiesHandler";
     private Map<String, String> l_mySqlProperties;
+    private String status = "Disconnected";
+    public static final String PROP_STATUS = "status";
+
+    /**
+     * Get the value of status
+     *
+     * @return the value of status
+     */
+    public String getStatus() {
+        return status;
+    }
+
+    /**
+     * Set the value of status
+     *
+     * @param status new value of status
+     */
+    public void setStatus(String status) {
+        String oldStatus = this.status;
+        this.status = status;
+        propertyChangeSupport.firePropertyChange(PROP_STATUS, oldStatus, status);
+    }
 
     /**
      * Get the value of l_mySqlProperties
@@ -76,7 +98,7 @@ public class MySqlConnection {
         this.l_mysqlPropertiesHandler = MysqlPropertiesHandler;
         propertyChangeSupport.firePropertyChange(PROP_MYSQLPROPERTIESHANDLER, oldMysqlPropertiesHandler, MysqlPropertiesHandler);
     }
-
+    
     public MySqlConnection() {
         l_mySqlProperties = new HashMap<>();
         l_mysqlPropertiesHandler = new PropertiesHandler();
@@ -86,7 +108,7 @@ public class MySqlConnection {
         this.setDataBase(l_mysqlPropertiesHandler.getProperty(PROP_DATABASE));
         this.setUser(l_mysqlPropertiesHandler.getProperty(PROP_USER));
         this.setPassword(l_mysqlPropertiesHandler.getProperty(PROP_PASSWORD));
-
+        setStatus("Disconnected");
     }
 
     /**
@@ -172,7 +194,7 @@ public class MySqlConnection {
         this.password = password;
         propertyChangeSupport.firePropertyChange(PROP_PASSWORD, oldPassword, password);
     }
-
+    
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**
@@ -192,25 +214,26 @@ public class MySqlConnection {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
-
+    
     public boolean connect() {
         conection = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conection = DriverManager.getConnection("jdbc:mysql://" + ip + "/" + dataBase, user, password);
-
+            
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Error: " + ex.getMessage());
         }
         if (conection != null) {
-            JOptionPane.showMessageDialog(null, "Connection Successful");
+            setStatus("Connected");
             return true;
         } else {
-            JOptionPane.showMessageDialog(null, "Could not connect to DB");
+            System.out.println("Could not connect to DB");
+            setStatus("Disconnected");
             return false;
         }
     }
-
+    
     public void execute(String p_query) {
         try {
             statement = conection.createStatement();
@@ -219,7 +242,7 @@ public class MySqlConnection {
             ex.printStackTrace();
         }
     }
-
+    
     public ResultSet query(String p_query) {
         ResultSet reg = null;
         try {
@@ -230,7 +253,7 @@ public class MySqlConnection {
         }
         return reg;
     }
-
+    
     public void goToFirsRow(ResultSet consulta) {
         try {
             while (consulta.previous()) {
@@ -238,7 +261,7 @@ public class MySqlConnection {
         } catch (SQLException ex) {
         }
     }
-
+    
     public ResultSet getQuestion() {
         try {
             CallableStatement callableStatement = conection.prepareCall("{ call getQuestion() }");
@@ -246,10 +269,10 @@ public class MySqlConnection {
         } catch (SQLException ex) {
             Logger.getLogger(MySqlConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         return null;
     }
-
+    
     public void insertQuestion(String p_question, String p_answer1, String p_answer2, String p_answer3, String p_answer4, int p_difficulty, int p_correct) {
         try {
             CallableStatement callableStatement = conection.prepareCall("{ call insertQuestion(?,?,?,?,?,?,?) }");
