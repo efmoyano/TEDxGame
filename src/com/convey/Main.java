@@ -19,7 +19,18 @@ public class Main {
             new ProcessRunner().run(ProcessPaths.WAMP_PATH);
         }
         try {
-            System.load(Main.class.getResource("/lib/opencv/x64/opencv_java249.dll").getPath());
+            boolean is64bit = false;
+            if (System.getProperty("os.name").contains("Windows")) {
+                is64bit = (System.getenv("ProgramFiles(x86)") != null);
+            } else {
+                is64bit = (System.getProperty("os.arch").indexOf("64") != -1);
+            }
+            if (is64bit) {
+                System.load(Main.class.getResource("/lib/opencv/x64/opencv_java249.dll").getPath());
+            } else {
+                System.load(Main.class.getResource("/lib/opencv/x86/opencv_java249.dll").getPath());
+            }
+
         } catch (UnsatisfiedLinkError e) {
             System.err.println("Native code library failed to load.\n" + e);
             System.exit(1);
