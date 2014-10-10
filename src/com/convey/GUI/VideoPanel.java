@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.opencv.core.Mat;
@@ -20,15 +22,19 @@ import org.opencv.core.Mat;
  */
 public final class VideoPanel extends javax.swing.JPanel {
 
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private MainFrame mainFrame;
-    public static final String PROP_MAINFRAME = "mainFrame";
     private int visorHeight;
-    public static final String PROP_VISORHEIGHT = "visorHeight";
     private int visorWidth;
-    public static final String PROP_VISORWIDTH = "visorWidth";
     private Graphics2D graphics;
+    private boolean detect = false;
 
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    public static final String PROP_VISORWIDTH = "visorWidth";
+    public static final String PROP_VISORHEIGHT = "visorHeight";
+    public static final String PROP_MAINFRAME = "mainFrame";
+
+    // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
     /**
      * Get the value of visorWidth
      *
@@ -108,6 +114,7 @@ public final class VideoPanel extends javax.swing.JPanel {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+    // </editor-fold>
 
     public VideoPanel(MainFrame p_mainFrame) {
 
@@ -119,6 +126,10 @@ public final class VideoPanel extends javax.swing.JPanel {
 
             @Override
             public void imageCaptured(Mat p_image) {
+
+                if (detect) {
+                    ImageUtils.detectFace(p_image);
+                }
 
                 final BufferedImage image = ImageUtils.matToBufferedImage(p_image);
 
@@ -138,6 +149,15 @@ public final class VideoPanel extends javax.swing.JPanel {
             @Override
             public void onDeviceStarted() {
                 graphics = (Graphics2D) l_visor0.getGraphics();
+                new Thread(() -> {
+                    try {
+                        Thread.sleep(5000);
+                        detect = true;
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(VideoPanel.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                }).start();
             }
         });
 

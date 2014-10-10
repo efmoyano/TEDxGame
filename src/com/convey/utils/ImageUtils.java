@@ -10,9 +10,15 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
 import org.opencv.highgui.Highgui;
+import org.opencv.objdetect.CascadeClassifier;
 
 /**
  * @projectName TEDxGame
@@ -33,19 +39,20 @@ public class ImageUtils {
      * @return The BufferedImage Resized
      */
     public static BufferedImage resizeImage(BufferedImage p_image, int p_width, int p_height) {
+        int type;
         if (p_image != null && p_width >= 0 && p_height >= 0) {
-            int type;
-
-            type = p_image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : p_image.getType();
-            BufferedImage resizedImage = new BufferedImage(p_width, p_height, type);
-            Graphics2D g = resizedImage.createGraphics();
-            g.drawImage(p_image, 0, 0, p_width, p_height, null);
-            g.dispose();
-            return resizedImage;
-        } else {
-            return p_image;
+            try {
+                type = p_image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : p_image.getType();
+                BufferedImage resizedImage = new BufferedImage(p_width, p_height, type);
+                Graphics2D g = resizedImage.createGraphics();
+                g.drawImage(p_image, 0, 0, p_width, p_height, null);
+                g.dispose();
+                return resizedImage;
+            } catch (java.lang.IllegalArgumentException e) {
+                System.out.println("Error rezising the image");
+            }
         }
-
+        return p_image;
     }
 
     /**
@@ -218,5 +225,25 @@ public class ImageUtils {
                     f.getAbsolutePath());
         }
         return null;
+    }
+
+    private static final String path = new File("src/res/lbpcascade_frontalface.xml").getAbsolutePath();
+
+    private static final CascadeClassifier faceDetector = new CascadeClassifier(path);
+
+    public static Mat detectFace(Mat p_image) {
+
+        try {
+            MatOfRect faceDetections = new MatOfRect();
+            faceDetector.detectMultiScale(p_image, faceDetections);
+
+            for (Rect rect : faceDetections.toArray()) {
+                Core.rectangle(p_image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
+                        new Scalar(0, 255, 0));
+            }
+        } catch (Exception e) {
+            System.err.println("Error Detecting face...crap");
+        }
+        return p_image;
     }
 }

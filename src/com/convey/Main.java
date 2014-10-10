@@ -23,7 +23,7 @@ public class Main {
             if (System.getProperty("os.name").contains("Windows")) {
                 is64bit = (System.getenv("ProgramFiles(x86)") != null);
             } else {
-                is64bit = (System.getProperty("os.arch").indexOf("64") != -1);
+                is64bit = (System.getProperty("os.arch").contains("64"));
             }
             if (is64bit) {
                 System.load(Main.class.getResource("/lib/opencv/x64/opencv_java249.dll").getPath());

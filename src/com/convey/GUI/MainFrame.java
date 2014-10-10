@@ -258,9 +258,9 @@ public class MainFrame extends javax.swing.JFrame {
             dataBaseLed.setLedColor(eu.hansolo.steelseries.tools.LedColor.RED_LED);
         }
 
-//        runFullScreenMenuActionPerformed(null);
-//        runScreenSaverMenuActionPerformed(null);
-//        setExtendedState(getExtendedState());
+        runFullScreenMenuActionPerformed(null);
+        runScreenSaverMenuActionPerformed(null);
+        setExtendedState(getExtendedState());
     }
 
     @SuppressWarnings("unchecked")
@@ -283,7 +283,7 @@ public class MainFrame extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         loadQuestionsItem = new javax.swing.JMenuItem();
         dbConfigItem = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        webcamMenuItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         arduinoSettingsItem = new javax.swing.JMenuItem();
         jMenu4 = new javax.swing.JMenu();
@@ -411,13 +411,13 @@ public class MainFrame extends javax.swing.JFrame {
         });
         jMenu2.add(dbConfigItem);
 
-        jMenuItem1.setText("Webcam");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        webcamMenuItem.setText("Webcam");
+        webcamMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                webcamMenuItemActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem1);
+        jMenu2.add(webcamMenuItem);
 
         l_mainMenu.add(jMenu2);
 
@@ -520,7 +520,7 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_loadQuestionsItemActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void webcamMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webcamMenuItemActionPerformed
         try {
             VideoPanel videoPanel = new VideoPanel(this);
             installNewPanel(videoPanel);
@@ -528,7 +528,7 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (Exception ex) {
             error(ex);
         }
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_webcamMenuItemActionPerformed
 
     public void installNewPanel(JComponent p_component) {
         Component l_last = getContentPane().getComponent(0);
@@ -547,7 +547,7 @@ public class MainFrame extends javax.swing.JFrame {
         if (!gameStarted) {
             setGameStarted(true);
             super.setExtendedState(super.getExtendedState());
-            newGameItemActionPerformed(null);
+            webcamMenuItemActionPerformed(null);
         }
     }
 
@@ -565,7 +565,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     public javax.swing.JMenuBar l_mainMenu;
     private javax.swing.JMenuItem loadQuestionsItem;
@@ -573,6 +572,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem newGameItem;
     private javax.swing.JMenuItem runFullScreenMenu;
     private javax.swing.JMenuItem runScreenSaverMenu;
+    private javax.swing.JMenuItem webcamMenuItem;
     private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 }

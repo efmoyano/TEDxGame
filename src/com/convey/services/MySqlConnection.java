@@ -24,7 +24,7 @@ import javax.swing.JOptionPane;
  * @date 07/09/2014 16:19:04
  */
 public final class MySqlConnection {
-    
+
     private Connection conection;
     private Statement statement;
     private String password;
@@ -98,7 +98,7 @@ public final class MySqlConnection {
         this.l_mysqlPropertiesHandler = MysqlPropertiesHandler;
         propertyChangeSupport.firePropertyChange(PROP_MYSQLPROPERTIESHANDLER, oldMysqlPropertiesHandler, MysqlPropertiesHandler);
     }
-    
+
     public MySqlConnection() {
         l_mySqlProperties = new HashMap<>();
         l_mysqlPropertiesHandler = new PropertiesHandler();
@@ -194,7 +194,7 @@ public final class MySqlConnection {
         this.password = password;
         propertyChangeSupport.firePropertyChange(PROP_PASSWORD, oldPassword, password);
     }
-    
+
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**
@@ -214,13 +214,13 @@ public final class MySqlConnection {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
-    
+
     public boolean connect() {
         conection = null;
         try {
             Class.forName("com.mysql.jdbc.Driver");
             conection = DriverManager.getConnection("jdbc:mysql://" + ip + "/" + dataBase, user, password);
-            
+
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println("Error: " + ex.getMessage());
         }
@@ -233,7 +233,7 @@ public final class MySqlConnection {
             return false;
         }
     }
-    
+
     public void execute(String p_query) {
         try {
             statement = conection.createStatement();
@@ -242,7 +242,7 @@ public final class MySqlConnection {
             ex.printStackTrace();
         }
     }
-    
+
     public ResultSet query(String p_query) {
         ResultSet reg = null;
         try {
@@ -253,7 +253,7 @@ public final class MySqlConnection {
         }
         return reg;
     }
-    
+
     public void goToFirsRow(ResultSet consulta) {
         try {
             while (consulta.previous()) {
@@ -261,7 +261,7 @@ public final class MySqlConnection {
         } catch (SQLException ex) {
         }
     }
-    
+
     public ResultSet getQuestion() {
         try {
             CallableStatement callableStatement = conection.prepareCall("{ call getQuestion() }");
@@ -269,10 +269,10 @@ public final class MySqlConnection {
         } catch (SQLException ex) {
             Logger.getLogger(MySqlConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return null;
     }
-    
+
     public void insertQuestion(String p_question, String p_answer1, String p_answer2, String p_answer3, String p_answer4, int p_difficulty, int p_correct) {
         try {
             CallableStatement callableStatement = conection.prepareCall("{ call insertQuestion(?,?,?,?,?,?,?) }");
