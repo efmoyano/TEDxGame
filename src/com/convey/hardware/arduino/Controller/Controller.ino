@@ -16,7 +16,7 @@ String f_inputString = "";
 boolean f_stringComplete = false;
 int f_command = 255;
 int l_delay = 100;
-boolean f_enabledMeasure = false;
+boolean f_enabledMeasure = true;
 long oldDistance = 0;
 
 short Button1 = 230;

@@ -12,10 +12,9 @@ import java.util.Random;
  */
 public final class GameEngine {
 
-    static int MAX_QUESTIONS = 3;
-    ArrayList<Question> questions;
-    ArrayList<Question> alreadyUsedQuestions;
-    MySqlConnection mySqlConnection;
+    private ArrayList<Question> questions;
+    private ArrayList<Question> alreadyUsedQuestions;
+    private MySqlConnection mySqlConnection;
     private boolean q1;
     private boolean q2;
     private boolean q3;
@@ -75,8 +74,8 @@ public final class GameEngine {
             case 4:
                 q1 = false;
                 q2 = false;
-                q3 = true;
-                q4 = false;
+                q3 = false;
+                q4 = true;
                 break;
 
         }

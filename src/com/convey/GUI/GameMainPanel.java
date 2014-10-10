@@ -18,18 +18,19 @@ import javax.swing.border.LineBorder;
 public final class GameMainPanel extends javax.swing.JPanel {
 
     private GameEngine gameEngine;
-    public static final String PROP_GAMEENGINE = "gameEngine";
     private Question currentQuestion;
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
     private MainFrame mainFrame;
-    public static final String PROP_MAINFRAME = "mainFrame";
-
     private Color answerResult = Color.WHITE;
-    public static final String PROP_ANSWERRESULT = "answerResult";
-
     private LineBorder answerBorder;
+    private final static int MAX_QUESTIONS = 3;
+    private int questionCounter = 0;
+
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     public static final String PROP_ANSWERBORDER = "answerBorder";
+    public static final String PROP_ANSWERRESULT = "answerResult";
+    public static final String PROP_MAINFRAME = "mainFrame";
+    public static final String PROP_GAMEENGINE = "gameEngine";
 
     /**
      * Get the value of answerBorder
@@ -146,45 +147,62 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
     public void loadNextQuestion() {
 
-        hideAnswers(false);
+        questionCounter++;
 
-        this.lblMensajeRespuesta.setText("");
-        this.currentQuestion = this.gameEngine.getNextQuestion();
+        if (questionCounter > MAX_QUESTIONS) {
+            questionCounter = 0;
 
-        this.lblQuestion.setText(this.currentQuestion.getQuestionText());
-
-        this.lblGreenOption.setText(this.currentQuestion.getOptionGreen());
-        this.lblOrangeOption.setText(this.currentQuestion.getOptionOrange());
-        this.lblYellowOption.setText(this.currentQuestion.getOptionYellow());
-        this.lblRedOption.setText(this.currentQuestion.getOptionRed());
-
-        Rectangle l_redFrom = new Rectangle(redAnswer.getBounds().x, redAnswer.getBounds().y, 0, 0);
-
-        Rectangle l_orangeFrom = new Rectangle(orangeAnswer.getBounds().x, orangeAnswer.getBounds().y, 0, 0);
-
-        Rectangle l_greenFrom = new Rectangle(greenAnswer.getBounds().x, greenAnswer.getBounds().y, 0, 0);
-
-        Rectangle l_yellowFrom = new Rectangle(yellowAnswer.getBounds().x, yellowAnswer.getBounds().y, 0, 0);
-
-        new Thread(() -> {
             try {
+                ResultsPanel resultsPanel = new ResultsPanel();
+                getMainFrame().installNewPanel(resultsPanel);
+                getMainFrame().setGameStarted(false);
 
-                new Animation(redAnswer, l_redFrom, redAnswer.getBounds()).start();
-                Thread.sleep(150);
-
-                new Animation(orangeAnswer, l_orangeFrom, orangeAnswer.getBounds()).start();
-                Thread.sleep(150);
-
-                new Animation(yellowAnswer, l_yellowFrom, yellowAnswer.getBounds()).start();
-                Thread.sleep(150);
-
-                new Animation(greenAnswer, l_greenFrom, greenAnswer.getBounds()).start();
-                Thread.sleep(150);
-
-            } catch (InterruptedException ex) {
-                Logger.getLogger(GameMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
+                getMainFrame().error(ex);
             }
-        }).start();
+
+        } else {
+            hideAnswers(false);
+
+            this.lblMensajeRespuesta.setText("");
+
+            this.currentQuestion = this.gameEngine.getNextQuestion();
+
+            this.lblQuestion.setText(this.currentQuestion.getQuestionText());
+
+            this.lblGreenOption.setText(this.currentQuestion.getOptionGreen());
+            this.lblOrangeOption.setText(this.currentQuestion.getOptionOrange());
+            this.lblYellowOption.setText(this.currentQuestion.getOptionYellow());
+            this.lblRedOption.setText(this.currentQuestion.getOptionRed());
+
+            Rectangle l_redFrom = new Rectangle(redAnswer.getBounds().x, redAnswer.getBounds().y, 0, 0);
+
+            Rectangle l_orangeFrom = new Rectangle(orangeAnswer.getBounds().x, orangeAnswer.getBounds().y, 0, 0);
+
+            Rectangle l_greenFrom = new Rectangle(greenAnswer.getBounds().x, greenAnswer.getBounds().y, 0, 0);
+
+            Rectangle l_yellowFrom = new Rectangle(yellowAnswer.getBounds().x, yellowAnswer.getBounds().y, 0, 0);
+
+            new Thread(() -> {
+                try {
+
+                    new Animation(redAnswer, l_redFrom, redAnswer.getBounds()).start();
+                    Thread.sleep(150);
+
+                    new Animation(orangeAnswer, l_orangeFrom, orangeAnswer.getBounds()).start();
+                    Thread.sleep(150);
+
+                    new Animation(yellowAnswer, l_yellowFrom, yellowAnswer.getBounds()).start();
+                    Thread.sleep(150);
+
+                    new Animation(greenAnswer, l_greenFrom, greenAnswer.getBounds()).start();
+                    Thread.sleep(150);
+
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(GameMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }).start();
+        }
     }
 
     public void hideAnswers(boolean p_flag1, boolean p_flag2, boolean p_flag3, boolean p_flag4) {
@@ -208,10 +226,12 @@ public final class GameMainPanel extends javax.swing.JPanel {
                 lblMensajeRespuesta.setText("Respuesta Correcta!!!");
                 setAnswerResult(Color.GREEN);
                 setAnswerBorder(new javax.swing.border.LineBorder(Color.GREEN, 10, true));
+                parseAnswerToButton(questionCounter, true);
             } else {
                 lblMensajeRespuesta.setText("Respuesta Incorrecta!!!");
                 setAnswerResult(Color.RED);
                 setAnswerBorder(new javax.swing.border.LineBorder(Color.RED, 10, true));
+                parseAnswerToButton(questionCounter, false);
             }
 
             try {
@@ -242,6 +262,35 @@ public final class GameMainPanel extends javax.swing.JPanel {
         }
     }
 
+    private void parseAnswerToButton(int p_seqButton, boolean p_answer) {
+        switch (p_seqButton) {
+            case 1:
+                dataBaseLed1.setLedOn(true);
+                if (p_answer) {
+                    dataBaseLed1.setLedColor(eu.hansolo.steelseries.tools.LedColor.GREEN_LED);
+                } else {
+                    dataBaseLed1.setLedColor(eu.hansolo.steelseries.tools.LedColor.RED_LED);
+                }
+                break;
+            case 2:
+                dataBaseLed2.setLedOn(true);
+                if (p_answer) {
+                    dataBaseLed2.setLedColor(eu.hansolo.steelseries.tools.LedColor.GREEN_LED);
+                } else {
+                    dataBaseLed2.setLedColor(eu.hansolo.steelseries.tools.LedColor.RED_LED);
+                }
+                break;
+            case 3:
+                dataBaseLed3.setLedOn(true);
+                if (p_answer) {
+                    dataBaseLed3.setLedColor(eu.hansolo.steelseries.tools.LedColor.GREEN_LED);
+                } else {
+                    dataBaseLed3.setLedColor(eu.hansolo.steelseries.tools.LedColor.RED_LED);
+                }
+                break;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -263,9 +312,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
         jPanel2 = new javax.swing.JPanel();
         informationPanel = new javax.swing.JPanel();
         lblMensajeRespuesta = new javax.swing.JLabel();
-        conveyBrand = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        dataBaseLed1 = new eu.hansolo.steelseries.extras.Led();
+        dataBaseLed2 = new eu.hansolo.steelseries.extras.Led();
+        dataBaseLed3 = new eu.hansolo.steelseries.extras.Led();
 
         setBackground(new java.awt.Color(204, 255, 255));
         setForeground(new java.awt.Color(204, 0, 153));
@@ -384,7 +434,7 @@ public final class GameMainPanel extends javax.swing.JPanel {
         customPanel1.add(answersPanel, java.awt.BorderLayout.CENTER);
 
         jPanel2.setOpaque(false);
-        jPanel2.setLayout(new java.awt.GridBagLayout());
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
 
         informationPanel.setOpaque(false);
         informationPanel.setLayout(new java.awt.GridBagLayout());
@@ -402,56 +452,27 @@ public final class GameMainPanel extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
         informationPanel.add(lblMensajeRespuesta, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        jPanel2.add(informationPanel, gridBagConstraints);
+        jPanel2.add(informationPanel);
 
-        conveyBrand.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        conveyBrand.setMaximumSize(new java.awt.Dimension(250, 100));
-        conveyBrand.setMinimumSize(new java.awt.Dimension(250, 100));
-        conveyBrand.setPreferredSize(new java.awt.Dimension(250, 100));
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
 
-        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(0, 51, 255));
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Convey");
+        dataBaseLed1.setLedColor(eu.hansolo.steelseries.tools.LedColor.CYAN);
+        dataBaseLed1.setMaximumSize(new java.awt.Dimension(100, 100));
+        dataBaseLed1.setMinimumSize(new java.awt.Dimension(100, 100));
+        jPanel1.add(dataBaseLed1);
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 2, 12)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel2.setText("Asking Game     ");
+        dataBaseLed2.setLedColor(eu.hansolo.steelseries.tools.LedColor.CYAN);
+        dataBaseLed2.setMaximumSize(new java.awt.Dimension(100, 100));
+        dataBaseLed2.setMinimumSize(new java.awt.Dimension(100, 100));
+        jPanel1.add(dataBaseLed2);
 
-        javax.swing.GroupLayout conveyBrandLayout = new javax.swing.GroupLayout(conveyBrand);
-        conveyBrand.setLayout(conveyBrandLayout);
-        conveyBrandLayout.setHorizontalGroup(
-            conveyBrandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(conveyBrandLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(conveyBrandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(conveyBrandLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 36, Short.MAX_VALUE))
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        conveyBrandLayout.setVerticalGroup(
-            conveyBrandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(conveyBrandLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        dataBaseLed3.setLedColor(eu.hansolo.steelseries.tools.LedColor.CYAN);
+        dataBaseLed3.setMaximumSize(new java.awt.Dimension(100, 100));
+        dataBaseLed3.setMinimumSize(new java.awt.Dimension(100, 100));
+        jPanel1.add(dataBaseLed3);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(20, 20, 20, 20);
-        jPanel2.add(conveyBrand, gridBagConstraints);
+        jPanel2.add(jPanel1);
 
         customPanel1.add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
@@ -478,12 +499,13 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel answersPanel;
-    private javax.swing.JPanel conveyBrand;
     private com.convey.component.CustomPanel customPanel1;
+    private eu.hansolo.steelseries.extras.Led dataBaseLed1;
+    private eu.hansolo.steelseries.extras.Led dataBaseLed2;
+    private eu.hansolo.steelseries.extras.Led dataBaseLed3;
     private javax.swing.JPanel greenAnswer;
     private javax.swing.JPanel informationPanel;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel lblGreenOption;
     private javax.swing.JLabel lblMensajeRespuesta;

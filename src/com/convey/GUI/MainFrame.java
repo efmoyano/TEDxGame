@@ -1,13 +1,12 @@
 package com.convey.GUI;
 
 import com.convey.hardware.arduino.ArduinoDevice;
-import com.convey.hardware.arduino.ArduinoEventListener;
+import com.convey.hardware.arduino.ArduinoEventAdapter;
 import com.convey.hardware.video.VideoDevice;
 import com.convey.services.MySqlConnection;
 import com.convey.utils.ProcessPaths;
 import com.convey.utils.ProcessRunner;
 import com.convey.utils.XLSProcessor;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
@@ -39,17 +38,39 @@ public class MainFrame extends javax.swing.JFrame {
 
     private ArduinoDevice arduinoDevice;
     private MySqlConnection mySqlConnection;
+    private GameMainPanel gameMainPanel;
+    private VideoDevice videoDevice;
+    private boolean gameStarted = false;
+
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
+    public static final String PROP_VIDEODEVICE = "videoDevice";
+    public static final String PROP_GAMEMAINPANEL = "gameMainPanel";
+    public static final String PROP_COLOR = "color";
     public static final String PROP_MYSQLCONNECTION = "mySqlConnection";
     public static final String PROP_ARDUINODEVICE = "arduinoDevice";
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    private int proximityDistance = 0;
-    public static final String PROP_PROXIMITYDISTANCE = "proximityDistance";
-    private Color color;
-    public static final String PROP_COLOR = "color";
-    private GameMainPanel gameMainPanel;
-    public static final String PROP_GAMEMAINPANEL = "gameMainPanel";
-    private VideoDevice videoDevice;
-    public static final String PROP_VIDEODEVICE = "videoDevice";
+    public static final String PROP_GAMESTARTED = "gameStarted";
+
+    // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
+    /**
+     * Get the value of gameStarted
+     *
+     * @return the value of gameStarted
+     */
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    /**
+     * Set the value of gameStarted
+     *
+     * @param gameStarted new value of gameStarted
+     */
+    public void setGameStarted(boolean gameStarted) {
+        boolean oldGameStarted = this.gameStarted;
+        this.gameStarted = gameStarted;
+        propertyChangeSupport.firePropertyChange(PROP_GAMESTARTED, oldGameStarted, gameStarted);
+    }
 
     /**
      * Get the value of videoDevice
@@ -89,46 +110,6 @@ public class MainFrame extends javax.swing.JFrame {
         GameMainPanel oldGameMainPanel = this.gameMainPanel;
         this.gameMainPanel = gameMainPanel;
         propertyChangeSupport.firePropertyChange(PROP_GAMEMAINPANEL, oldGameMainPanel, gameMainPanel);
-    }
-
-    /**
-     * Get the value of color
-     *
-     * @return the value of color
-     */
-    public Color getColor() {
-        return color;
-    }
-
-    /**
-     * Set the value of color
-     *
-     * @param color new value of color
-     */
-    public void setColor(Color color) {
-        Color oldColor = this.color;
-        this.color = color;
-        propertyChangeSupport.firePropertyChange(PROP_COLOR, oldColor, color);
-    }
-
-    /**
-     * Get the value of proximityDistance
-     *
-     * @return the value of proximityDistance
-     */
-    public int getProximityDistance() {
-        return proximityDistance;
-    }
-
-    /**
-     * Set the value of proximityDistance
-     *
-     * @param proximityDistance new value of proximityDistance
-     */
-    public void setProximityDistance(int proximityDistance) {
-        int oldProximityDistance = this.proximityDistance;
-        this.proximityDistance = proximityDistance;
-        propertyChangeSupport.firePropertyChange(PROP_PROXIMITYDISTANCE, oldProximityDistance, proximityDistance);
     }
 
     /**
@@ -190,6 +171,7 @@ public class MainFrame extends javax.swing.JFrame {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+    // </editor-fold>
 
     public MainFrame() {
 
@@ -211,24 +193,8 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 });
 
-        mySqlConnection = new MySqlConnection();
-        mySqlConnection.connect();
-
-        arduinoDevice.addArduinoEventListener(new ArduinoEventListener() {
+        arduinoDevice.addArduinoEventListener(new ArduinoEventAdapter() {
             private String[] l_components;
-
-            @Override
-            public void onArduinoStateChanged(String p_status) {
-            }
-
-            @Override
-            public void onCalculatePacketsPerSecond(int p_pps) {
-
-            }
-
-            @Override
-            public void onArduinoConnected() {
-            }
 
             @Override
             public void onMessageReceived(String p_message) {
@@ -243,9 +209,7 @@ public class MainFrame extends javax.swing.JFrame {
 
                     // Proximity sensor messages   
                     case "1":
-
-                        setProximityDistance(Integer.parseInt(l_components[1]));
-                        if (proximityDistance < 50) {
+                        if (Integer.parseInt(l_components[1]) < 50) {
                             event();
                         }
                         break;
@@ -284,7 +248,15 @@ public class MainFrame extends javax.swing.JFrame {
             }
         });
 
+        mySqlConnection = new MySqlConnection();
+
         initComponents();
+
+        if (mySqlConnection.connect()) {
+            dataBaseLed.setLedColor(eu.hansolo.steelseries.tools.LedColor.GREEN_LED);
+        } else {
+            dataBaseLed.setLedColor(eu.hansolo.steelseries.tools.LedColor.RED_LED);
+        }
 
 //        runFullScreenMenuActionPerformed(null);
 //        runScreenSaverMenuActionPerformed(null);
@@ -294,9 +266,16 @@ public class MainFrame extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        bindingGroup = new org.jdesktop.beansbinding.BindingGroup();
 
         mainPanel = new javax.swing.JPanel();
         customPanel1 = new com.convey.component.CustomPanel();
+        jPanel1 = new javax.swing.JPanel();
+        dataBaseLed = new eu.hansolo.steelseries.extras.Led();
+        dataBaseLabel = new javax.swing.JLabel();
+        conveyBrand = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         l_mainMenu = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         newGameItem = new javax.swing.JMenuItem();
@@ -320,6 +299,68 @@ public class MainFrame extends javax.swing.JFrame {
         mainPanel.setLayout(new java.awt.BorderLayout());
 
         customPanel1.setImageBackground("wallpaper.png");
+        customPanel1.setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(255, 255, 255)), "Data Base", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 11), new java.awt.Color(255, 255, 255))); // NOI18N
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        dataBaseLed.setLedColor(eu.hansolo.steelseries.tools.LedColor.BLUE_LED);
+        dataBaseLed.setLedOn(true);
+        dataBaseLed.setMinimumSize(new java.awt.Dimension(50, 50));
+        jPanel1.add(dataBaseLed);
+
+        dataBaseLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        dataBaseLabel.setForeground(new java.awt.Color(255, 255, 255));
+        dataBaseLabel.setMinimumSize(new java.awt.Dimension(100, 100));
+
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${mySqlConnection.status}"), dataBaseLabel, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
+        jPanel1.add(dataBaseLabel);
+
+        customPanel1.add(jPanel1, java.awt.BorderLayout.SOUTH);
+
+        conveyBrand.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        conveyBrand.setMaximumSize(new java.awt.Dimension(250, 100));
+        conveyBrand.setMinimumSize(new java.awt.Dimension(250, 100));
+        conveyBrand.setOpaque(false);
+
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 48)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 51, 255));
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Convey");
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 2, 12)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(102, 102, 102));
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel2.setText("Asking Game     ");
+
+        javax.swing.GroupLayout conveyBrandLayout = new javax.swing.GroupLayout(conveyBrand);
+        conveyBrand.setLayout(conveyBrandLayout);
+        conveyBrandLayout.setHorizontalGroup(
+            conveyBrandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(conveyBrandLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(conveyBrandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(conveyBrandLayout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+        conveyBrandLayout.setVerticalGroup(
+            conveyBrandLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(conveyBrandLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        customPanel1.add(conveyBrand, java.awt.BorderLayout.PAGE_START);
+
         mainPanel.add(customPanel1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
@@ -416,6 +457,8 @@ public class MainFrame extends javax.swing.JFrame {
 
         setJMenuBar(l_mainMenu);
 
+        bindingGroup.bind();
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -458,6 +501,7 @@ public class MainFrame extends javax.swing.JFrame {
         try {
             gameMainPanel = new GameMainPanel(this);
             installNewPanel(gameMainPanel);
+            setGameStarted(true);
         } catch (Exception ex) {
             error(ex);
         }
@@ -500,24 +544,35 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     public void event() {
-        super.setExtendedState(super.getExtendedState());
+        if (!gameStarted) {
+            setGameStarted(true);
+            super.setExtendedState(super.getExtendedState());
+            newGameItemActionPerformed(null);
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem arduinoSettingsItem;
+    private javax.swing.JPanel conveyBrand;
     private com.convey.component.CustomPanel customPanel1;
+    private javax.swing.JLabel dataBaseLabel;
+    private eu.hansolo.steelseries.extras.Led dataBaseLed;
     private javax.swing.JMenuItem dbConfigItem;
     private javax.swing.JMenuItem exitItem;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPanel jPanel1;
     public javax.swing.JMenuBar l_mainMenu;
     private javax.swing.JMenuItem loadQuestionsItem;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuItem newGameItem;
     private javax.swing.JMenuItem runFullScreenMenu;
     private javax.swing.JMenuItem runScreenSaverMenu;
+    private org.jdesktop.beansbinding.BindingGroup bindingGroup;
     // End of variables declaration//GEN-END:variables
 }
