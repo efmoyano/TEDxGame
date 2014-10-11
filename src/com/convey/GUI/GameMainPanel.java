@@ -554,7 +554,6 @@ public final class GameMainPanel extends javax.swing.JPanel {
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         battery1.setMinimumSize(new java.awt.Dimension(500, 50));
-        battery1.setPreferredSize(new java.awt.Dimension(500, 50));
         battery1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel3.add(battery1, java.awt.BorderLayout.PAGE_START);
 
