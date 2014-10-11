@@ -75,9 +75,9 @@ public class Utils {
         }
     }
 
-    public void playSound() {
+    public void playSound(String p_path) {
         try {
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream("/res/sounds/pup.wav"));
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(this.getClass().getResourceAsStream("/res/sounds/" + p_path));
             Clip clip = AudioSystem.getClip();
             clip.open(audioIn);
             clip.start();

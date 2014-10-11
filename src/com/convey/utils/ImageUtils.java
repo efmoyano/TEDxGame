@@ -49,7 +49,7 @@ public class ImageUtils {
                 g.dispose();
                 return resizedImage;
             } catch (java.lang.IllegalArgumentException e) {
-                System.out.println("Error rezising the image");
+//                System.out.println("Error rezising the image");
             }
         }
         return p_image;
@@ -231,19 +231,33 @@ public class ImageUtils {
 
     private static final CascadeClassifier faceDetector = new CascadeClassifier(path);
 
-    public static Mat detectFace(Mat p_image) {
-
+    public static Rect detectFace(Mat p_image) {
+        Rect biggestFace = null;
         try {
             MatOfRect faceDetections = new MatOfRect();
             faceDetector.detectMultiScale(p_image, faceDetections);
 
+            biggestFace = faceDetections.toArray()[0];
+
+            double actualArea;
+            double biggest = 0;
+
             for (Rect rect : faceDetections.toArray()) {
-                Core.rectangle(p_image, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height),
-                        new Scalar(0, 255, 0));
+                actualArea = rect.area();
+                if (actualArea > biggest) {
+                    biggestFace = rect;
+                }
             }
+            Core.rectangle(
+                    p_image,
+                    new Point(biggestFace.x, biggestFace.y),
+                    new Point(biggestFace.x + biggestFace.width, biggestFace.y + biggestFace.height),
+                    new Scalar(0, 255, 0));
+
+            return biggestFace;
         } catch (Exception e) {
-            System.err.println("Error Detecting face...crap");
+//            System.err.println("Error Detecting face...crap");
+            return biggestFace;
         }
-        return p_image;
     }
 }

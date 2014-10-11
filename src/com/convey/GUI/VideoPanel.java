@@ -2,6 +2,8 @@ package com.convey.GUI;
 
 import com.convey.hardware.video.DeviceEventAdapter;
 import com.convey.utils.ImageUtils;
+import com.convey.utils.Utils;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
@@ -9,8 +11,10 @@ import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
+import javax.swing.JPanel;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.highgui.Highgui;
 
 /**
  * @projectName TEDxGame
@@ -26,7 +30,8 @@ public final class VideoPanel extends javax.swing.JPanel {
     private int visorHeight;
     private int visorWidth;
     private Graphics2D graphics;
-    private boolean detect = false;
+    private boolean screenShotCalled = false;
+    private BufferedImage imageDraw;
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -124,57 +129,72 @@ public final class VideoPanel extends javax.swing.JPanel {
 
         getMainFrame().getVideoDevice().addDeviceEventListener(new DeviceEventAdapter() {
 
+            Mat originalImage;
+
             @Override
             public void imageCaptured(Mat p_image) {
 
-                if (detect) {
-                    ImageUtils.detectFace(p_image);
+                originalImage = p_image.clone();
+
+                Rect l_detected = ImageUtils.detectFace(p_image);
+                if (l_detected != null) {
+
+                    if (!screenShotCalled) {
+
+                        Highgui.imwrite("detected.jpg", new Mat(originalImage, l_detected));
+                        paintComponent(graphics);
+                        new Utils().playSound("face_detected.wav");
+
+//                        eventScreenShoot(5000);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(VideoPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        getMainFrame().getVideoDevice().stop();
+                        getMainFrame().startNewGame();
+
+                    } else {
+                        imageDraw = ImageUtils.matToBufferedImage(p_image);
+                        paintComponent(graphics);
+                    }
                 }
-
-                final BufferedImage image = ImageUtils.matToBufferedImage(p_image);
-
-                SwingUtilities.invokeLater(() -> {
-
-                    graphics.drawImage(ImageUtils.resizeImage(
-                            image, visorWidth, visorHeight), 0, 0, null);
-                });
-            }
-
-            @Override
-            public void deviceStopped() {
-                revalidate();
-                repaint();
             }
 
             @Override
             public void onDeviceStarted() {
-                graphics = (Graphics2D) l_visor0.getGraphics();
-                new Thread(() -> {
-                    try {
-                        Thread.sleep(5000);
-                        detect = true;
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(VideoPanel.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-
-                }).start();
+                eventScreenShoot(3000);
             }
         });
+        
+        getMainFrame().startDevice();
+        
+    }
 
-        boolean init0 = getMainFrame().getVideoDevice().init(0);
-        if (init0) {
-            getMainFrame().getVideoDevice().setResolution(640, 480);
-            getMainFrame().getVideoDevice().start();
-        } else {
-            JOptionPane.showMessageDialog(null, "Can not start the device");
-        }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawImage(ImageUtils.resizeImage(
+                imageDraw, visorWidth, visorHeight), 0, 0, null);
+    }
+
+    public void eventScreenShoot(int p_delay) {
+        screenShotCalled = true;
+        new Thread(() -> {
+            try {
+                Thread.sleep(p_delay);
+                screenShotCalled = false;
+            } catch (InterruptedException ex) {
+                Logger.getLogger(VideoPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        l_visor0 = new javax.swing.JLabel();
+        mainPanel = new javax.swing.JPanel();
 
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
@@ -183,20 +203,29 @@ public final class VideoPanel extends javax.swing.JPanel {
         });
         setLayout(new java.awt.BorderLayout());
 
-        l_visor0.setMaximumSize(new java.awt.Dimension(3840, 2160));
-        l_visor0.setMinimumSize(new java.awt.Dimension(320, 240));
-        l_visor0.setPreferredSize(new java.awt.Dimension(320, 240));
-        add(l_visor0, java.awt.BorderLayout.CENTER);
+        mainPanel.setBackground(new java.awt.Color(0, 0, 0));
+
+        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
+        mainPanel.setLayout(mainPanelLayout);
+        mainPanelLayout.setHorizontalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 711, Short.MAX_VALUE)
+        );
+        mainPanelLayout.setVerticalGroup(
+            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 514, Short.MAX_VALUE)
+        );
+
+        add(mainPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-        graphics = (Graphics2D) l_visor0.getGraphics();
-        visorHeight = l_visor0.getHeight();
-        visorWidth = l_visor0.getWidth();
-
+        graphics = (Graphics2D) mainPanel.getGraphics();
+        visorHeight = mainPanel.getHeight();
+        visorWidth = mainPanel.getWidth();
     }//GEN-LAST:event_formComponentResized
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel l_visor0;
+    private javax.swing.JPanel mainPanel;
     // End of variables declaration//GEN-END:variables
 }

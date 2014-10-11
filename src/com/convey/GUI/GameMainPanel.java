@@ -5,10 +5,12 @@ import com.convey.game.Question;
 import com.convey.utils.Animation;
 import java.awt.Color;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Timer;
 import javax.swing.border.LineBorder;
 
 /**
@@ -24,6 +26,11 @@ public final class GameMainPanel extends javax.swing.JPanel {
     private LineBorder answerBorder;
     private final static int MAX_QUESTIONS = 3;
     private int questionCounter = 0;
+    private Timer timer;
+    private long startTime;
+    private long duration;
+    private double score = 0;
+    private final double questionTime = 5000;
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -31,6 +38,28 @@ public final class GameMainPanel extends javax.swing.JPanel {
     public static final String PROP_ANSWERRESULT = "answerResult";
     public static final String PROP_MAINFRAME = "mainFrame";
     public static final String PROP_GAMEENGINE = "gameEngine";
+    public static final String PROP_SCORE = "score";
+
+    // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
+    /**
+     * Get the value of score
+     *
+     * @return the value of score
+     */
+    public double getScore() {
+        return score;
+    }
+
+    /**
+     * Set the value of score
+     *
+     * @param score new value of score
+     */
+    public void setScore(double score) {
+        double oldScore = this.score;
+        this.score = score;
+        propertyChangeSupport.firePropertyChange(PROP_SCORE, oldScore, score);
+    }
 
     /**
      * Get the value of answerBorder
@@ -131,6 +160,7 @@ public final class GameMainPanel extends javax.swing.JPanel {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+    // </editor-fold>
 
     public GameMainPanel() {
         initComponents();
@@ -147,6 +177,8 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
     public void loadNextQuestion() {
 
+        battery1.setValue(100);
+
         questionCounter++;
 
         if (questionCounter > MAX_QUESTIONS) {
@@ -156,6 +188,8 @@ public final class GameMainPanel extends javax.swing.JPanel {
                 ResultsPanel resultsPanel = new ResultsPanel();
                 getMainFrame().installNewPanel(resultsPanel);
                 getMainFrame().setGameStarted(false);
+
+                System.out.println("Score: " + score);
 
             } catch (Exception ex) {
                 getMainFrame().error(ex);
@@ -168,7 +202,7 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
             this.currentQuestion = this.gameEngine.getNextQuestion();
 
-            this.lblQuestion.setText(this.currentQuestion.getQuestionText());
+            this.lblQuestion.setText(this.currentQuestion.getTextQuestion());
 
             this.lblGreenOption.setText(this.currentQuestion.getOptionGreen());
             this.lblOrangeOption.setText(this.currentQuestion.getOptionOrange());
@@ -198,6 +232,8 @@ public final class GameMainPanel extends javax.swing.JPanel {
                     new Animation(greenAnswer, l_greenFrom, greenAnswer.getBounds()).start();
                     Thread.sleep(150);
 
+                    startCountDown();
+
                 } catch (InterruptedException ex) {
                     Logger.getLogger(GameMainPanel.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -219,16 +255,25 @@ public final class GameMainPanel extends javax.swing.JPanel {
         greenAnswer.setVisible(p_flag);
     }
 
-    public void checkResponse(String p_resopnse) {
+    public void checkResponse(String p_resopnse, boolean p_validTime) {
 
         new Thread(() -> {
-            if (currentQuestion.evalResponse(p_resopnse)) {
-                lblMensajeRespuesta.setText("Respuesta Correcta!!!");
-                setAnswerResult(Color.GREEN);
-                setAnswerBorder(new javax.swing.border.LineBorder(Color.GREEN, 10, true));
-                parseAnswerToButton(questionCounter, true);
+            if (p_validTime) {
+                if (currentQuestion.evalResponse(p_resopnse)) {
+                    lblMensajeRespuesta.setText("Respuesta Correcta!!!");
+                    setAnswerResult(Color.GREEN);
+                    setAnswerBorder(new javax.swing.border.LineBorder(Color.GREEN, 10, true));
+                    parseAnswerToButton(questionCounter, true);
+                    sumScore(questionTime - duration, currentQuestion.getDificulty());
+
+                } else {
+                    lblMensajeRespuesta.setText("Respuesta Incorrecta!!!");
+                    setAnswerResult(Color.RED);
+                    setAnswerBorder(new javax.swing.border.LineBorder(Color.RED, 10, true));
+                    parseAnswerToButton(questionCounter, false);
+                }
             } else {
-                lblMensajeRespuesta.setText("Respuesta Incorrecta!!!");
+                lblMensajeRespuesta.setText("Tiempo Agotado!!!");
                 setAnswerResult(Color.RED);
                 setAnswerBorder(new javax.swing.border.LineBorder(Color.RED, 10, true));
                 parseAnswerToButton(questionCounter, false);
@@ -245,19 +290,38 @@ public final class GameMainPanel extends javax.swing.JPanel {
         }).start();
     }
 
+    public void startCountDown() {
+        timer = new Timer(40, (ActionEvent e) -> {
+            duration = System.currentTimeMillis() - startTime;
+            double l_progress = (double) duration / (double) questionTime;
+            if (l_progress > 1f) {
+                l_progress = 1f;
+                ((Timer) e.getSource()).stop();
+                checkResponse("", false);
+            }
+            battery1.setValue((int) Math.abs(Math.round(l_progress * 100) - 100));
+        });
+        timer.setRepeats(true);
+        timer.setCoalesce(true);
+        timer.setInitialDelay(0);
+        startTime = System.currentTimeMillis();
+        timer.start();
+    }
+
     public void buttonListener(String p_option) {
+        timer.stop();
         switch (p_option) {
             case "1":
-                checkResponse(lblRedOption.getText());
+                checkResponse(lblRedOption.getText(), true);
                 break;
             case "2":
-                checkResponse(lblOrangeOption.getText());
+                checkResponse(lblOrangeOption.getText(), true);
                 break;
             case "3":
-                checkResponse(lblGreenOption.getText());
+                checkResponse(lblGreenOption.getText(), true);
                 break;
             case "4":
-                checkResponse(lblYellowOption.getText());
+                checkResponse(lblYellowOption.getText(), true);
                 break;
         }
     }
@@ -291,6 +355,14 @@ public final class GameMainPanel extends javax.swing.JPanel {
         }
     }
 
+    private void sumScore(double p_duration, double p_questionDifficulty) {
+
+        double l_calculated = (p_duration * p_questionDifficulty);
+
+        score = score + l_calculated;
+
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -316,6 +388,8 @@ public final class GameMainPanel extends javax.swing.JPanel {
         dataBaseLed1 = new eu.hansolo.steelseries.extras.Led();
         dataBaseLed2 = new eu.hansolo.steelseries.extras.Led();
         dataBaseLed3 = new eu.hansolo.steelseries.extras.Led();
+        jPanel3 = new javax.swing.JPanel();
+        battery1 = new eu.hansolo.steelseries.extras.Battery();
 
         setBackground(new java.awt.Color(204, 255, 255));
         setForeground(new java.awt.Color(204, 0, 153));
@@ -474,6 +548,18 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
         jPanel2.add(jPanel1);
 
+        jPanel3.setMinimumSize(new java.awt.Dimension(500, 50));
+        jPanel3.setOpaque(false);
+        jPanel3.setPreferredSize(new java.awt.Dimension(500, 50));
+        jPanel3.setLayout(new java.awt.BorderLayout());
+
+        battery1.setMinimumSize(new java.awt.Dimension(500, 50));
+        battery1.setPreferredSize(new java.awt.Dimension(500, 50));
+        battery1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel3.add(battery1, java.awt.BorderLayout.PAGE_START);
+
+        jPanel2.add(jPanel3);
+
         customPanel1.add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
         add(customPanel1, java.awt.BorderLayout.CENTER);
@@ -499,6 +585,7 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel answersPanel;
+    private eu.hansolo.steelseries.extras.Battery battery1;
     private com.convey.component.CustomPanel customPanel1;
     private eu.hansolo.steelseries.extras.Led dataBaseLed1;
     private eu.hansolo.steelseries.extras.Led dataBaseLed2;
@@ -507,6 +594,7 @@ public final class GameMainPanel extends javax.swing.JPanel {
     private javax.swing.JPanel informationPanel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JLabel lblGreenOption;
     private javax.swing.JLabel lblMensajeRespuesta;
     private javax.swing.JLabel lblOrangeOption;

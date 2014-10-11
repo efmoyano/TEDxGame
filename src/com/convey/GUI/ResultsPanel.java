@@ -10,6 +10,8 @@ package com.convey.GUI;
  * @date 09/10/2014 23:29:09
  */
 public class ResultsPanel extends javax.swing.JPanel {
+    
+    
 
     public ResultsPanel() {
         initComponents();

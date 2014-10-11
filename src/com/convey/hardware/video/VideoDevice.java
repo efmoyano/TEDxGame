@@ -1,7 +1,5 @@
 package com.convey.hardware.video;
 
-import com.googlecode.javacv.cpp.videoInputLib.videoInput;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -92,20 +90,6 @@ public final class VideoDevice {
             } // end if
         } // end for
         return l_validResolutions;
-    }
-
-    /**
-     *
-     * @return An ArrayList containing the video devices
-     */
-    public ArrayList getDevices() {
-        ArrayList l_devices = new ArrayList();
-
-        for (int i = 0; i < videoInput.listDevices(); i++) {
-            l_devices.add(i + ") " + videoInput.getDeviceName(i));
-        }
-
-        return l_devices;
     }
 
     /**

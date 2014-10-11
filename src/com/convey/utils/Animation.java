@@ -37,7 +37,7 @@ public class Animation {
             if (l_progress > 1f) {
                 l_progress = 1f;
                 ((Timer) e.getSource()).stop();
-                new Utils().playSound();
+                new Utils().playSound("question_start.wav");
             }
             Rectangle l_target = calculateProgress(from, to, l_progress);
             panel.setBounds(l_target);

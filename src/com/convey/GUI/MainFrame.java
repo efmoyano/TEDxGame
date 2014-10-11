@@ -41,6 +41,7 @@ public class MainFrame extends javax.swing.JFrame {
     private GameMainPanel gameMainPanel;
     private VideoDevice videoDevice;
     private boolean gameStarted = false;
+    private VideoPanel videoPanel;
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -498,6 +499,10 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_runScreenSaverMenuActionPerformed
 
     private void newGameItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameItemActionPerformed
+        startNewGame();
+    }//GEN-LAST:event_newGameItemActionPerformed
+
+    public void startNewGame() {
         try {
             gameMainPanel = new GameMainPanel(this);
             installNewPanel(gameMainPanel);
@@ -505,7 +510,7 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (Exception ex) {
             error(ex);
         }
-    }//GEN-LAST:event_newGameItemActionPerformed
+    }
 
     private void loadQuestionsItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadQuestionsItemActionPerformed
         XLSProcessor xlsProcessor = new XLSProcessor();
@@ -522,9 +527,10 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void webcamMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webcamMenuItemActionPerformed
         try {
-            VideoPanel videoPanel = new VideoPanel(this);
+            if (videoPanel == null) {
+                videoPanel = new VideoPanel(this);
+            }
             installNewPanel(videoPanel);
-
         } catch (Exception ex) {
             error(ex);
         }
@@ -551,6 +557,16 @@ public class MainFrame extends javax.swing.JFrame {
         }
     }
 
+    public void startDevice() {
+        boolean init0 = getVideoDevice().init(0);
+        if (init0) {
+            getVideoDevice().setResolution(640, 480);
+            getVideoDevice().start();
+        } else {
+            JOptionPane.showMessageDialog(null, "Can not start the device");
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem arduinoSettingsItem;
     private javax.swing.JPanel conveyBrand;
@@ -561,7 +577,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JMenuItem exitItem;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JMenu jMenu1;
+    public javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;

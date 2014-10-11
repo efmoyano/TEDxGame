@@ -1,5 +1,7 @@
 package com.convey.game;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 
 /**
@@ -8,42 +10,124 @@ import java.util.ArrayList;
  */
 public class Question {
 
+    private int dificulty;
     private String textQuestion;
-    private ArrayList<Option> f_options;
-    private int f_dificulty;
+    private ArrayList<Option> options;
 
-    public Question(String p_questionText, Option p_option1, Option p_option2, Option p_option3, Option p_option4, int p_difficulty) {
-        textQuestion = p_questionText;
-        f_options = new ArrayList<>();
-        f_options.add(p_option1);
-        f_options.add(p_option2);
-        f_options.add(p_option3);
-        f_options.add(p_option4);
-        f_dificulty = p_difficulty;
+    public static final String PROP_DIFICULTY = "dificulty";
+    public static final String PROP_TEXTQUESTION = "textQuestion";
+    public static final String PROP_OPTIONS = "options";
+
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    
+    // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
+    /**
+     * Get the value of options
+     *
+     * @return the value of options
+     */
+    public ArrayList<Option> getOptions() {
+        return options;
     }
 
-    public boolean evalResponse(String response) {
-        return this.f_options.stream().anyMatch((actual) -> (actual.text.trim().equalsIgnoreCase(response.trim()) && actual.isAnswer == true));
+    /**
+     * Set the value of options
+     *
+     * @param options new value of options
+     */
+    public void setOptions(ArrayList<Option> options) {
+        ArrayList<Option> oldOptions = this.options;
+        this.options = options;
+        propertyChangeSupport.firePropertyChange(PROP_OPTIONS, oldOptions, options);
     }
 
-    public String getQuestionText() {
+    /**
+     * Get the value of textQuestion
+     *
+     * @return the value of textQuestion
+     */
+    public String getTextQuestion() {
         return textQuestion;
     }
 
+    /**
+     * Set the value of textQuestion
+     *
+     * @param textQuestion new value of textQuestion
+     */
+    public void setTextQuestion(String textQuestion) {
+        String oldTextQuestion = this.textQuestion;
+        this.textQuestion = textQuestion;
+        propertyChangeSupport.firePropertyChange(PROP_TEXTQUESTION, oldTextQuestion, textQuestion);
+    }
+
+    /**
+     * Get the value of dificulty
+     *
+     * @return the value of dificulty
+     */
+    public int getDificulty() {
+        return dificulty;
+    }
+
+    /**
+     * Set the value of dificulty
+     *
+     * @param dificulty new value of dificulty
+     */
+    public void setDificulty(int dificulty) {
+        int oldDificulty = this.dificulty;
+        this.dificulty = dificulty;
+        propertyChangeSupport.firePropertyChange(PROP_DIFICULTY, oldDificulty, dificulty);
+    }
+
+    /**
+     * Add PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    /**
+     * Remove PropertyChangeListener.
+     *
+     * @param listener
+     */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+    // </editor-fold>
+
+    public Question(String p_questionText, Option p_option1, Option p_option2, Option p_option3, Option p_option4, int p_difficulty) {
+        textQuestion = p_questionText;
+        options = new ArrayList<>();
+        options.add(p_option1);
+        options.add(p_option2);
+        options.add(p_option3);
+        options.add(p_option4);
+        dificulty = p_difficulty;
+    }
+
+    public boolean evalResponse(String response) {
+        return this.options.stream().anyMatch((actual) -> (actual.text.trim().equalsIgnoreCase(response.trim()) && actual.isAnswer == true));
+    }
+
     public String getOptionRed() {
-        return f_options.get(0).text;
+        return options.get(0).text;
     }
 
     public String getOptionYellow() {
-        return f_options.get(1).text;
+        return options.get(1).text;
     }
 
     public String getOptionOrange() {
-        return f_options.get(2).text;
+        return options.get(2).text;
     }
 
     public String getOptionGreen() {
-        return this.f_options.get(3).text;
+        return this.options.get(3).text;
     }
 
 }
