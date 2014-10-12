@@ -20,7 +20,6 @@ import javax.swing.border.LineBorder;
 public final class GameMainPanel extends javax.swing.JPanel {
 
     private GameEngine gameEngine;
-    private Question currentQuestion;
     private MainFrame mainFrame;
     private Color answerResult = Color.WHITE;
     private LineBorder answerBorder;
@@ -30,7 +29,8 @@ public final class GameMainPanel extends javax.swing.JPanel {
     private long startTime;
     private long duration;
     private double score = 0;
-    private final double questionTime = 5000;
+    private final double questionTime = 10000;
+    private Question currentQuestion;
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -39,8 +39,29 @@ public final class GameMainPanel extends javax.swing.JPanel {
     public static final String PROP_MAINFRAME = "mainFrame";
     public static final String PROP_GAMEENGINE = "gameEngine";
     public static final String PROP_SCORE = "score";
+    public static final String PROP_CURRENTQUESTION = "currentQuestion";
 
     // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
+    /**
+     * Get the value of currentQuestion
+     *
+     * @return the value of currentQuestion
+     */
+    public Question getCurrentQuestion() {
+        return currentQuestion;
+    }
+
+    /**
+     * Set the value of currentQuestion
+     *
+     * @param currentQuestion new value of currentQuestion
+     */
+    public void setCurrentQuestion(Question currentQuestion) {
+        Question oldCurrentQuestion = this.currentQuestion;
+        this.currentQuestion = currentQuestion;
+        propertyChangeSupport.firePropertyChange(PROP_CURRENTQUESTION, oldCurrentQuestion, currentQuestion);
+    }
+
     /**
      * Get the value of score
      *
@@ -178,74 +199,22 @@ public final class GameMainPanel extends javax.swing.JPanel {
     public void loadNextQuestion() {
 
         battery1.setValue(100);
-
         questionCounter++;
 
         if (questionCounter > MAX_QUESTIONS) {
             questionCounter = 0;
 
-            try {
-                ResultsPanel resultsPanel = new ResultsPanel();
-                getMainFrame().installNewPanel(resultsPanel);
-                getMainFrame().setGameStarted(false);
-
-                System.out.println("Score: " + score);
-
-            } catch (Exception ex) {
-                getMainFrame().error(ex);
-            }
+            ResultsPanel resultsPanel = new ResultsPanel(score);
+            getMainFrame().installNewPanel(resultsPanel);
+            getMainFrame().setGameStarted(false);
 
         } else {
             hideAnswers(false);
 
             this.lblMensajeRespuesta.setText("");
-
-            this.currentQuestion = this.gameEngine.getNextQuestion();
-
-            this.lblQuestion.setText(this.currentQuestion.getTextQuestion());
-
-            this.lblGreenOption.setText(this.currentQuestion.getOptionGreen());
-            this.lblOrangeOption.setText(this.currentQuestion.getOptionOrange());
-            this.lblYellowOption.setText(this.currentQuestion.getOptionYellow());
-            this.lblRedOption.setText(this.currentQuestion.getOptionRed());
-
-            Rectangle l_redFrom = new Rectangle(redAnswer.getBounds().x, redAnswer.getBounds().y, 0, 0);
-
-            Rectangle l_orangeFrom = new Rectangle(orangeAnswer.getBounds().x, orangeAnswer.getBounds().y, 0, 0);
-
-            Rectangle l_greenFrom = new Rectangle(greenAnswer.getBounds().x, greenAnswer.getBounds().y, 0, 0);
-
-            Rectangle l_yellowFrom = new Rectangle(yellowAnswer.getBounds().x, yellowAnswer.getBounds().y, 0, 0);
-
-            new Thread(() -> {
-                try {
-
-                    new Animation(redAnswer, l_redFrom, redAnswer.getBounds()).start();
-                    Thread.sleep(150);
-
-                    new Animation(orangeAnswer, l_orangeFrom, orangeAnswer.getBounds()).start();
-                    Thread.sleep(150);
-
-                    new Animation(yellowAnswer, l_yellowFrom, yellowAnswer.getBounds()).start();
-                    Thread.sleep(150);
-
-                    new Animation(greenAnswer, l_greenFrom, greenAnswer.getBounds()).start();
-                    Thread.sleep(150);
-
-                    startCountDown();
-
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(GameMainPanel.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }).start();
+            setCurrentQuestion(this.gameEngine.getNextQuestion());
+            startAnimations();
         }
-    }
-
-    public void hideAnswers(boolean p_flag1, boolean p_flag2, boolean p_flag3, boolean p_flag4) {
-        redAnswer.setVisible(p_flag1);
-        orangeAnswer.setVisible(p_flag2);
-        yellowAnswer.setVisible(p_flag3);
-        greenAnswer.setVisible(p_flag4);
     }
 
     public void hideAnswers(boolean p_flag) {
@@ -261,6 +230,7 @@ public final class GameMainPanel extends javax.swing.JPanel {
             if (p_validTime) {
                 if (currentQuestion.evalResponse(p_resopnse)) {
                     lblMensajeRespuesta.setText("Respuesta Correcta!!!");
+
                     setAnswerResult(Color.GREEN);
                     setAnswerBorder(new javax.swing.border.LineBorder(Color.GREEN, 10, true));
                     parseAnswerToButton(questionCounter, true);
@@ -363,6 +333,35 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
     }
 
+    private void startAnimations() {
+        new Thread(() -> {
+            try {
+
+                new Animation(redAnswer, new Rectangle(redAnswer.getBounds().x, redAnswer.getBounds().y, 0, 0),
+                        redAnswer.getBounds()).start();
+
+                Thread.sleep(150);
+
+                new Animation(orangeAnswer, new Rectangle(orangeAnswer.getBounds().x, orangeAnswer.getBounds().y, 0, 0),
+                        orangeAnswer.getBounds()).start();
+                Thread.sleep(150);
+
+                new Animation(yellowAnswer, new Rectangle(yellowAnswer.getBounds().x, yellowAnswer.getBounds().y, 0, 0),
+                        yellowAnswer.getBounds()).start();
+                Thread.sleep(150);
+
+                new Animation(greenAnswer, new Rectangle(greenAnswer.getBounds().x, greenAnswer.getBounds().y, 0, 0),
+                        greenAnswer.getBounds()).start();
+                Thread.sleep(150);
+
+                startCountDown();
+
+            } catch (InterruptedException ex) {
+                Logger.getLogger(GameMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }).start();
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -412,9 +411,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
         lblQuestion.setFont(new java.awt.Font("Tahoma", 1, 36)); // NOI18N
         lblQuestion.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        lblQuestion.setText("Como se llama la version anterior a windows XP ?");
 
         binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${answerResult}"), lblQuestion, org.jdesktop.beansbinding.BeanProperty.create("foreground"));
+        bindingGroup.addBinding(binding);
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentQuestion.textQuestion}"), lblQuestion, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -438,7 +438,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
         redAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblRedOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblRedOption.setText("Windows 3.1");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentQuestion.optionRed}"), lblRedOption, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -457,7 +460,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
         orangeAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblOrangeOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblOrangeOption.setText("Windows 95");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentQuestion.optionOrange}"), lblOrangeOption, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -476,7 +482,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
         yellowAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblYellowOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblYellowOption.setText("Windows Vista");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentQuestion.optionYellow}"), lblYellowOption, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -495,7 +504,10 @@ public final class GameMainPanel extends javax.swing.JPanel {
         greenAnswer.setLayout(new java.awt.GridBagLayout());
 
         lblGreenOption.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        lblGreenOption.setText("Windows 98");
+
+        binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${currentQuestion.optionGreen}"), lblGreenOption, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        bindingGroup.addBinding(binding);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -548,12 +560,13 @@ public final class GameMainPanel extends javax.swing.JPanel {
 
         jPanel2.add(jPanel1);
 
-        jPanel3.setMinimumSize(new java.awt.Dimension(500, 50));
+        jPanel3.setMinimumSize(new java.awt.Dimension(500, 75));
         jPanel3.setOpaque(false);
-        jPanel3.setPreferredSize(new java.awt.Dimension(500, 50));
+        jPanel3.setPreferredSize(new java.awt.Dimension(500, 75));
         jPanel3.setLayout(new java.awt.BorderLayout());
 
         battery1.setMinimumSize(new java.awt.Dimension(500, 50));
+        battery1.setPreferredSize(new java.awt.Dimension(500, 50));
         battery1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         jPanel3.add(battery1, java.awt.BorderLayout.PAGE_START);
 

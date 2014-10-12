@@ -14,12 +14,12 @@ public class Question {
     private String textQuestion;
     private ArrayList<Option> options;
 
+    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
     public static final String PROP_DIFICULTY = "dificulty";
     public static final String PROP_TEXTQUESTION = "textQuestion";
     public static final String PROP_OPTIONS = "options";
 
-    private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    
     // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
     /**
      * Get the value of options

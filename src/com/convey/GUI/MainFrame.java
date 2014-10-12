@@ -194,35 +194,6 @@ public class MainFrame extends javax.swing.JFrame {
                     }
                 });
 
-        arduinoDevice.addArduinoEventListener(new ArduinoEventAdapter() {
-            private String[] l_components;
-
-            @Override
-            public void onMessageReceived(String p_message) {
-
-                l_components = p_message.split("x");
-
-                switch (l_components[0]) {
-                    // Information messages
-                    case "0":
-                        JOptionPane.showMessageDialog(null, l_components[1]);
-                        break;
-
-                    // Proximity sensor messages   
-                    case "1":
-                        if (Integer.parseInt(l_components[1]) < 50) {
-                            event();
-                        }
-                        break;
-
-                    // Button messages
-                    case "2":
-                        gameMainPanel.buttonListener(l_components[1]);
-                        break;
-                }
-            }
-        });
-
         KeyStroke escapeKeyStroke = KeyStroke.getKeyStroke("ESCAPE");
         Action escapeAction = new AbstractAction() {
             @Override
@@ -253,6 +224,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         initComponents();
 
+        customPanel1.setImageBackground("wallpaper1.png");
         if (mySqlConnection.connect()) {
             dataBaseLed.setLedColor(eu.hansolo.steelseries.tools.LedColor.GREEN_LED);
         } else {
@@ -262,6 +234,35 @@ public class MainFrame extends javax.swing.JFrame {
         runFullScreenMenuActionPerformed(null);
         runScreenSaverMenuActionPerformed(null);
         setExtendedState(getExtendedState());
+
+        arduinoDevice.addArduinoEventListener(new ArduinoEventAdapter() {
+            private String[] l_components;
+
+            @Override
+            public void onMessageReceived(String p_message) {
+
+                l_components = p_message.split("x");
+
+                switch (l_components[0]) {
+                    // Information messages
+                    case "0":
+                        JOptionPane.showMessageDialog(null, l_components[1]);
+                        break;
+
+                    // Proximity sensor messages   
+                    case "1":
+                        if (Integer.parseInt(l_components[1]) < 50) {
+                            event();
+                        }
+                        break;
+
+                    // Button messages
+                    case "2":
+                        gameMainPanel.buttonListener(l_components[1]);
+                        break;
+                }
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")
