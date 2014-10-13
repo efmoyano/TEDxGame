@@ -2,6 +2,8 @@ package com.convey.GUI;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @projectName TEDxGame
@@ -11,11 +13,33 @@ import java.beans.PropertyChangeSupport;
  * @author Ernesto Moyano
  * @date 09/10/2014 23:29:09
  */
-public class ResultsPanel extends javax.swing.JPanel {
-
+public final class ResultsPanel extends javax.swing.JPanel {
+    
     private double score = 0;
-
+    private MainFrame mainFrame;
+    
     public static final String PROP_SCORE = "score";
+    public static final String PROP_MAINFRAME = "mainFrame";
+
+    /**
+     * Get the value of mainFrame
+     *
+     * @return the value of mainFrame
+     */
+    public MainFrame getMainFrame() {
+        return mainFrame;
+    }
+
+    /**
+     * Set the value of mainFrame
+     *
+     * @param mainFrame new value of mainFrame
+     */
+    public void setMainFrame(MainFrame mainFrame) {
+        MainFrame oldMainFrame = this.mainFrame;
+        this.mainFrame = mainFrame;
+        propertyChangeSupport.firePropertyChange(PROP_MAINFRAME, oldMainFrame, mainFrame);
+    }
 
     /**
      * Get the value of score
@@ -36,7 +60,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         this.score = score;
         propertyChangeSupport.firePropertyChange(PROP_SCORE, oldScore, score);
     }
-
+    
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     /**
@@ -58,13 +82,16 @@ public class ResultsPanel extends javax.swing.JPanel {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
-
-    public ResultsPanel(double p_score) {
-        setScore(p_score);
+    
+    public ResultsPanel(MainFrame p_mainFrame) {
+        setMainFrame(p_mainFrame);
         initComponents();
         mainPanel.setImageBackground("wallpaper_score.jpg");
+        
+        getMainFrame().getGameMainPanel().setGameStarted(false);
+        
     }
-
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -112,7 +139,7 @@ public class ResultsPanel extends javax.swing.JPanel {
         jPanel2.setMinimumSize(new java.awt.Dimension(50, 50));
         jPanel2.setOpaque(false);
         jPanel2.setPreferredSize(new java.awt.Dimension(50, 50));
-        jPanel2.setLayout(new java.awt.GridLayout());
+        jPanel2.setLayout(new java.awt.GridLayout(1, 0));
 
         jPanel3.setOpaque(false);
         jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
@@ -130,9 +157,8 @@ public class ResultsPanel extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Korataki", 0, 48)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("25456.5");
 
-        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${score}"), jLabel1, org.jdesktop.beansbinding.BeanProperty.create("text"));
+        org.jdesktop.beansbinding.Binding binding = org.jdesktop.beansbinding.Bindings.createAutoBinding(org.jdesktop.beansbinding.AutoBinding.UpdateStrategy.READ_WRITE, this, org.jdesktop.beansbinding.ELProperty.create("${mainFrame.gameMainPanel.score}"), jLabel1, org.jdesktop.beansbinding.BeanProperty.create("text"));
         bindingGroup.addBinding(binding);
 
         jPanel4.add(jLabel1);

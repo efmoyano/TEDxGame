@@ -31,6 +31,7 @@ public final class GameMainPanel extends javax.swing.JPanel {
     private double score = 0;
     private final double questionTime = 10000;
     private Question currentQuestion;
+    private boolean gameStarted = false;
 
     private transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -40,8 +41,29 @@ public final class GameMainPanel extends javax.swing.JPanel {
     public static final String PROP_GAMEENGINE = "gameEngine";
     public static final String PROP_SCORE = "score";
     public static final String PROP_CURRENTQUESTION = "currentQuestion";
+    public static final String PROP_GAMESTARTED = "gameStarted";
 
     // <editor-fold defaultstate="collapsed" desc="Getters & Setters">
+    /**
+     * Get the value of gameStarted
+     *
+     * @return the value of gameStarted
+     */
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+
+    /**
+     * Set the value of gameStarted
+     *
+     * @param gameStarted new value of gameStarted
+     */
+    public void setGameStarted(boolean gameStarted) {
+        boolean oldGameStarted = this.gameStarted;
+        this.gameStarted = gameStarted;
+        propertyChangeSupport.firePropertyChange(PROP_GAMESTARTED, oldGameStarted, gameStarted);
+    }
+
     /**
      * Get the value of currentQuestion
      *
@@ -183,16 +205,24 @@ public final class GameMainPanel extends javax.swing.JPanel {
     }
     // </editor-fold>
 
-    public GameMainPanel() {
-        initComponents();
-        this.gameEngine = new GameEngine(getMainFrame().getMySqlConnection());
-        this.loadNextQuestion();
-    }
-
     public GameMainPanel(MainFrame p_mainFrame) {
         setMainFrame(p_mainFrame);
         this.gameEngine = new GameEngine(getMainFrame().getMySqlConnection());
         initComponents();
+    }
+
+    public void startGame() {
+        dataBaseLed1.setLedColor(eu.hansolo.steelseries.tools.LedColor.CYAN);
+        dataBaseLed1.setLedOn(false);
+
+        dataBaseLed2.setLedColor(eu.hansolo.steelseries.tools.LedColor.CYAN);
+        dataBaseLed2.setLedOn(false);
+
+        dataBaseLed3.setLedColor(eu.hansolo.steelseries.tools.LedColor.CYAN);
+        dataBaseLed3.setLedOn(false);
+
+        getMainFrame().installNewPanel(this);
+        setGameStarted(true);
         this.loadNextQuestion();
     }
 
@@ -204,9 +234,9 @@ public final class GameMainPanel extends javax.swing.JPanel {
         if (questionCounter > MAX_QUESTIONS) {
             questionCounter = 0;
 
-            ResultsPanel resultsPanel = new ResultsPanel(score);
+            ResultsPanel resultsPanel = new ResultsPanel(getMainFrame());
             getMainFrame().installNewPanel(resultsPanel);
-            getMainFrame().setGameStarted(false);
+            setGameStarted(false);
 
         } else {
             hideAnswers(false);
@@ -279,20 +309,22 @@ public final class GameMainPanel extends javax.swing.JPanel {
     }
 
     public void buttonListener(String p_option) {
-        timer.stop();
-        switch (p_option) {
-            case "1":
-                checkResponse(lblRedOption.getText(), true);
-                break;
-            case "2":
-                checkResponse(lblOrangeOption.getText(), true);
-                break;
-            case "3":
-                checkResponse(lblGreenOption.getText(), true);
-                break;
-            case "4":
-                checkResponse(lblYellowOption.getText(), true);
-                break;
+        if (isGameStarted()) {
+            timer.stop();
+            switch (p_option) {
+                case "1":
+                    checkResponse(lblRedOption.getText(), true);
+                    break;
+                case "2":
+                    checkResponse(lblOrangeOption.getText(), true);
+                    break;
+                case "3":
+                    checkResponse(lblGreenOption.getText(), true);
+                    break;
+                case "4":
+                    checkResponse(lblYellowOption.getText(), true);
+                    break;
+            }
         }
     }
 

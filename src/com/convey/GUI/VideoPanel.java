@@ -10,8 +10,6 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.highgui.Highgui;
@@ -144,15 +142,14 @@ public final class VideoPanel extends javax.swing.JPanel {
                         Highgui.imwrite("detected.jpg", new Mat(originalImage, l_detected));
                         paintComponent(graphics);
                         new Utils().playSound("face_detected.wav");
-
-//                        eventScreenShoot(5000);
+                        
                         try {
                             Thread.sleep(1000);
                         } catch (InterruptedException ex) {
                             Logger.getLogger(VideoPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                         getMainFrame().getVideoDevice().stop();
-                        getMainFrame().startNewGame();
+                        getMainFrame().getGameMainPanel().startGame();
 
                     } else {
                         imageDraw = ImageUtils.matToBufferedImage(p_image);
@@ -166,9 +163,6 @@ public final class VideoPanel extends javax.swing.JPanel {
                 eventScreenShoot(3000);
             }
         });
-        
-        getMainFrame().startDevice();
-        
     }
 
     @Override

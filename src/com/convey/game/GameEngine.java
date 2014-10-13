@@ -13,8 +13,7 @@ import java.util.Random;
 public final class GameEngine {
 
     private ArrayList<Question> questions;
-    private ArrayList<Question> alreadyUsedQuestions;
-    private MySqlConnection mySqlConnection;
+    private final MySqlConnection mySqlConnection;
     private boolean q1;
     private boolean q2;
     private boolean q3;

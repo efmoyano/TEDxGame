@@ -3,6 +3,13 @@ package com.convey;
 import com.convey.GUI.MainFrame;
 import com.convey.utils.ProcessPaths;
 import com.convey.utils.ProcessRunner;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @projectName TEDxGame
@@ -34,6 +41,13 @@ public class Main {
         } catch (UnsatisfiedLinkError e) {
             System.err.println("Native code library failed to load.\n" + e);
             System.exit(1);
+        }
+        try {
+            GraphicsEnvironment ge
+                    = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, Main.class.getResourceAsStream("/res/fonts/korataki.ttf")));
+        } catch (IOException | FontFormatException e) {
+            System.err.println("Cannot load the font");
         }
     }
 

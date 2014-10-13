@@ -17,6 +17,7 @@
         <Property name="opaque" type="boolean" value="false"/>
       </Properties>
       <AuxValues>
+        <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="this.addMouseMotionListener(new java.awt.event.MouseAdapter() {&#xa;            @Override&#xa;        public void mouseMoved(java.awt.event.MouseEvent e) {&#xa;                boolean l_hasSelectedMenu = false;&#xa;                for (int i = 0; i &lt; l_mainMenu.getMenuCount(); ++i) {&#xa;                    if (l_mainMenu.getMenu(i).isSelected()) {&#xa;                        l_hasSelectedMenu = true;&#xa;                        break;&#xa;                    }&#xa;                }&#xa;                if (!l_hasSelectedMenu) {&#xa;                    l_mainMenu.setVisible(e.getY() &lt; 50);&#xa;                }&#xa;            }&#xa;        });"/>
         <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
       <SubComponents>
@@ -181,7 +182,8 @@
       <SubComponents>
         <Container class="com.convey.component.CustomPanel" name="customPanel1">
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="customPanel1.setImageBackground(&quot;wallpaper.png&quot;);"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="javax.swing.KeyStroke escapeKeyStroke = javax.swing.KeyStroke.getKeyStroke(&quot;ESCAPE&quot;);&#xa;        javax.swing.Action escapeAction = new javax.swing.AbstractAction() {&#xa;            @Override&#xa;        public void actionPerformed(java.awt.event.ActionEvent e) {&#xa;                java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(null);&#xa;            }&#xa;        };&#xa;        this.getRootPane().getInputMap(javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW).put(escapeKeyStroke, &quot;ESCAPE&quot;);&#xa;        this.getRootPane().getActionMap().put(&quot;ESCAPE&quot;, escapeAction);&#xa;&#xa;this.addWindowListener(&#xa;                new java.awt.event.WindowAdapter() {&#xa;&#xa;                    @Override&#xa;        public void windowClosing(java.awt.event.WindowEvent e) {&#xa;                        if (videoDevice != null) {&#xa;                            videoDevice.stop();&#xa;                        }&#xa;                    }&#xa;                });"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="customPanel1.setImageBackground(&quot;wallpaper1.png&quot;);"/>
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">

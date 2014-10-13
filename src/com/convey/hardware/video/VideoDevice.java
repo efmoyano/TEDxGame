@@ -102,7 +102,7 @@ public final class VideoDevice {
 
         capture = new VideoCapture(p_index);
         try {
-            Thread.sleep(500);
+            Thread.sleep(250);
         } catch (InterruptedException ex) {
         }
         if (capture.isOpened()) {
